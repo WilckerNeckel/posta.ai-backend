@@ -1,14 +1,14 @@
 import bcrypt from "bcrypt";
 import z from "zod";
 
-export class GestorPassword {
+export class Password {
     private readonly hashedPassword: string;
 
     private constructor(hashedPassword: string) {
         this.hashedPassword = hashedPassword;
     }
 
-    // Define password validation validator inside the GestorPassword class
+    // Define password validation validator inside the Password class
     private static validate(plainTextPassword: string) {
         const validator = z
             .string()
@@ -18,19 +18,19 @@ export class GestorPassword {
     }
 
     //Method to create a hashed password from plain text
-    static async create(plainTextPassword: string): Promise<GestorPassword> {
-        GestorPassword.validate(plainTextPassword);
+    static async create(plainTextPassword: string): Promise<Password> {
+        Password.validate(plainTextPassword);
         const salt = 10;
         const hashedPassword = await bcrypt.hash(plainTextPassword, salt);
-        return new GestorPassword(hashedPassword);
+        return new Password(hashedPassword);
     }
 
     /**
      * Cria Senha sem hashear novamente, pois já está hasheado
      *
      */
-    static fromHash(hashedPassword: string): GestorPassword {
-        return new GestorPassword(hashedPassword);
+    static fromHash(hashedPassword: string): Password {
+        return new Password(hashedPassword);
     }
 
     async matches(plainTextPassword: string): Promise<boolean> {
