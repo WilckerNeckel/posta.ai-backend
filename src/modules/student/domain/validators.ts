@@ -2,6 +2,7 @@ import z from "zod";
 import { Password } from "./vos/Password";
 
 export const createStudentValidator = z.object({
+    id: z.string(),
     nome: z.string(),
     usuario: z.string(),
     matricula: z.string(),
