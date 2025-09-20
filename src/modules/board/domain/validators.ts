@@ -9,7 +9,10 @@ export const columnValidator = z.object({
     userId: z.string(),
 });
 
-export const createColumnValidator = columnValidator.omit({ ordem: true });
+export const createColumnValidator = columnValidator.omit({
+    ordem: true,
+    id: true,
+});
 
 export const taskValidator = z.object({
     id: z.string(),
@@ -19,7 +22,10 @@ export const taskValidator = z.object({
     columnId: z.string(),
 });
 
-export const createTaskValidator = taskValidator.omit({ ordem: true });
+export const createTaskValidator = taskValidator.omit({
+    ordem: true,
+    id: true,
+});
 
 export const columnWithTasksValidator = columnValidator.extend({
     tasks: taskValidator.array(),
