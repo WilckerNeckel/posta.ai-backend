@@ -2,10 +2,18 @@ import z from "zod";
 import {
     createStudentInputValidator,
     createStudentValidator,
+    updateStudentInputValidator,
+    updateStudentValidator,
 } from "./validators";
 
-export type CreateStudentInputValidator = z.infer<
+export type CreateStudentInput = z.infer<
     typeof createStudentInputValidator
 >;
 
-export type CreateStudentValidator = z.infer<typeof createStudentValidator>;
+export type CreateStudent = z.infer<typeof createStudentValidator>;
+
+export type UpdateStudent = z.infer<typeof updateStudentValidator>;
+
+export type UpdateStudentInput = z.infer<
+    typeof updateStudentInputValidator
+>;

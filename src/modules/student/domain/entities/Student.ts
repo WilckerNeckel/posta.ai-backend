@@ -1,6 +1,6 @@
 import { CreateStudentRequestModel } from "../../application/dtos/CreateStudentRequestModel";
 import { MatriculaGenarator } from "../services/MatriculaGenarator";
-import { CreateStudentInputValidator, CreateStudentValidator } from "../types";
+import { CreateStudent, CreateStudentInput } from "../types";
 import { createStudentValidator } from "../validators";
 import { Password } from "../vos/Password";
 
@@ -13,7 +13,7 @@ export class Student {
     private readonly senha: Password;
     public readonly dataAdmissao: Date;
 
-    private constructor(props: CreateStudentValidator) {
+    private constructor(props: CreateStudent) {
         this.id = props.id;
         this.nome = props.nome;
         this.matricula = props.matricula;
@@ -23,9 +23,7 @@ export class Student {
         this.dataAdmissao = props.dataAdmissao;
     }
 
-    public static async create(
-        input: CreateStudentInputValidator
-    ): Promise<Student> {
+    public static async create(input: CreateStudentInput): Promise<Student> {
         const admisionDate = new Date();
         const matricula = new MatriculaGenarator().generate(admisionDate);
         const resolvedInput = {
@@ -34,14 +32,14 @@ export class Student {
             matricula: matricula,
             dataAdmissao: admisionDate,
             senha: await Password.create(input.senha),
-        } satisfies CreateStudentValidator;
+        } satisfies CreateStudent;
 
         const validatedData = this.validate(resolvedInput);
 
         return new Student(validatedData);
     }
 
-    public static load(props: CreateStudentValidator): Student {
+    public static load(props: CreateStudent): Student {
         const validatedData = this.validate(props);
         return new Student(validatedData);
     }
@@ -54,19 +52,18 @@ export class Student {
             matricula: this.matricula,
             dataAdmissao: this.dataAdmissao,
             nome: input.nome ?? this.nome,
-            curso:
-                input.curso ?? (this.curso as CreateStudentValidator["curso"]),
+            curso: input.curso ?? (this.curso as CreateStudent["curso"]),
             usuario: input.usuario ?? this.usuario,
             senha: input.senha
                 ? await Password.create(input.senha)
                 : this.senha,
-        } satisfies CreateStudentValidator;
+        } satisfies CreateStudent;
 
         const validatedData = Student.validate(updatedData);
         return new Student(validatedData);
     }
 
-    private static validate(input: any): CreateStudentValidator {
+    private static validate(input: any): CreateStudent {
         return createStudentValidator.parse(input);
     }
 }

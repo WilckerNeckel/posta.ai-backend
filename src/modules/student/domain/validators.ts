@@ -35,3 +35,14 @@ export const createStudentInputValidator = z.object({
     usuario: z.string(),
     senha: z.string().min(6, "A senha deve conter no mínimo 6 caracteres"),
 });
+
+export const updateStudentInputValidator =
+    createStudentInputValidator.partial();
+
+export const updateStudentValidator = createStudentValidator
+    .omit({
+        id: true,
+        matricula: true,
+        dataAdmissao: true,
+    })
+    .partial();
