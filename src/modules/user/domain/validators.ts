@@ -1,7 +1,7 @@
 import z from "zod";
 import { Password } from "./vos/Password";
 
-export const createStudentValidator = z.object({
+export const createUserValidator = z.object({
     id: z.string(),
     nome: z.string(),
     usuario: z.string(),
@@ -22,7 +22,7 @@ export const createStudentValidator = z.object({
     dataAdmissao: z.date(),
 });
 
-export const createStudentInputValidator = z.object({
+export const createUserInputValidator = z.object({
     nome: z.string(),
     curso: z.enum([
         "Ciência da Computação",
@@ -36,10 +36,9 @@ export const createStudentInputValidator = z.object({
     senha: z.string().min(6, "A senha deve conter no mínimo 6 caracteres"),
 });
 
-export const updateStudentInputValidator =
-    createStudentInputValidator.partial();
+export const updateUserInputValidator = createUserInputValidator.partial();
 
-export const updateStudentValidator = createStudentValidator
+export const updateUserValidator = createUserValidator
     .omit({
         id: true,
         matricula: true,

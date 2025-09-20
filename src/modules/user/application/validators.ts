@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const baseStudentResponseValidator = z.object({
+export const baseUserResponseValidator = z.object({
     id: z.string(),
     matricula: z.string(),
     nome: z.string(),

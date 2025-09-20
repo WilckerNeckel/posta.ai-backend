@@ -1,10 +1,10 @@
-import { CreateStudentRequestModel } from "../../application/dtos/CreateStudentRequestModel";
+import { CreateUserRequestModel } from "../../application/dtos/CreateUserRequestModel";
 import { MatriculaGenarator } from "../services/MatriculaGenarator";
-import { CreateStudent, CreateStudentInput } from "../types";
-import { createStudentValidator } from "../validators";
+import { CreateUser, CreateUserInput } from "../types";
+import { createUserValidator } from "../validators";
 import { Password } from "../vos/Password";
 
-export class Student {
+export class User {
     public readonly id: string;
     public readonly nome: string;
     public readonly matricula: string;
@@ -13,7 +13,7 @@ export class Student {
     private readonly senha: Password;
     public readonly dataAdmissao: Date;
 
-    private constructor(props: CreateStudent) {
+    private constructor(props: CreateUser) {
         this.id = props.id;
         this.nome = props.nome;
         this.matricula = props.matricula;
@@ -23,7 +23,7 @@ export class Student {
         this.dataAdmissao = props.dataAdmissao;
     }
 
-    public static async create(input: CreateStudentInput): Promise<Student> {
+    public static async create(input: CreateUserInput): Promise<User> {
         const admisionDate = new Date();
         const matricula = new MatriculaGenarator().generate(admisionDate);
         const resolvedInput = {
@@ -32,38 +32,38 @@ export class Student {
             matricula: matricula,
             dataAdmissao: admisionDate,
             senha: await Password.create(input.senha),
-        } satisfies CreateStudent;
+        } satisfies CreateUser;
 
         const validatedData = this.validate(resolvedInput);
 
-        return new Student(validatedData);
+        return new User(validatedData);
     }
 
-    public static load(props: CreateStudent): Student {
+    public static load(props: CreateUser): User {
         const validatedData = this.validate(props);
-        return new Student(validatedData);
+        return new User(validatedData);
     }
 
     public async copyWith(
-        input: Partial<CreateStudentRequestModel>
-    ): Promise<Student> {
+        input: Partial<CreateUserRequestModel>
+    ): Promise<User> {
         const updatedData = {
             id: this.id,
             matricula: this.matricula,
             dataAdmissao: this.dataAdmissao,
             nome: input.nome ?? this.nome,
-            curso: input.curso ?? (this.curso as CreateStudent["curso"]),
+            curso: input.curso ?? (this.curso as CreateUser["curso"]),
             usuario: input.usuario ?? this.usuario,
             senha: input.senha
                 ? await Password.create(input.senha)
                 : this.senha,
-        } satisfies CreateStudent;
+        } satisfies CreateUser;
 
-        const validatedData = Student.validate(updatedData);
-        return new Student(validatedData);
+        const validatedData = User.validate(updatedData);
+        return new User(validatedData);
     }
 
-    private static validate(input: any): CreateStudent {
-        return createStudentValidator.parse(input);
+    private static validate(input: any): CreateUser {
+        return createUserValidator.parse(input);
     }
 }
