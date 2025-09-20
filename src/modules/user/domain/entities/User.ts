@@ -1,4 +1,5 @@
 import { CreateUserRequestModel } from "../../application/dtos/CreateUserRequestModel";
+import { UserRole } from "../enums/UserRole";
 import { MatriculaGenarator } from "../services/MatriculaGenarator";
 import { CreateUser, CreateUserInput } from "../types";
 import { createUserValidator } from "../validators";
@@ -12,7 +13,7 @@ export class User {
     public readonly curso: string;
     private readonly senha: Password;
     public readonly dataAdmissao: Date;
-    public readonly role: "professor" | "aluno";
+    public readonly role: UserRole;
 
     private constructor(props: CreateUser) {
         this.id = props.id;

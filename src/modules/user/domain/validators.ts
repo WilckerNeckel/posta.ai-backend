@@ -1,12 +1,13 @@
 import z from "zod";
 import { Password } from "./vos/Password";
+import { UserRole } from "./enums/UserRole";
 
 export const createUserValidator = z.object({
     id: z.string(),
     nome: z.string(),
     usuario: z.string(),
     matricula: z.string(),
-    role: z.enum(["professor", "aluno"]),
+    role: z.nativeEnum(UserRole),
     senha: z
         .any()
         .refine((value): value is Password => value instanceof Password, {
@@ -25,7 +26,7 @@ export const createUserValidator = z.object({
 
 export const createUserInputValidator = z.object({
     nome: z.string(),
-    role: z.enum(["professor", "aluno"]),
+    role: z.nativeEnum(UserRole),
     curso: z.enum([
         "Ciência da Computação",
         "Arquitetura e Urbanismo",
