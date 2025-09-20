@@ -12,6 +12,7 @@ export class User {
     public readonly curso: string;
     private readonly senha: Password;
     public readonly dataAdmissao: Date;
+    public readonly role: "professor" | "aluno";
 
     private constructor(props: CreateUser) {
         this.id = props.id;
@@ -19,6 +20,7 @@ export class User {
         this.matricula = props.matricula;
         this.usuario = props.usuario;
         this.curso = props.curso;
+        this.role = props.role;
         this.senha = props.senha;
         this.dataAdmissao = props.dataAdmissao;
     }
@@ -51,6 +53,7 @@ export class User {
             id: this.id,
             matricula: this.matricula,
             dataAdmissao: this.dataAdmissao,
+            role: input.role ?? this.role,
             nome: input.nome ?? this.nome,
             curso: input.curso ?? (this.curso as CreateUser["curso"]),
             usuario: input.usuario ?? this.usuario,

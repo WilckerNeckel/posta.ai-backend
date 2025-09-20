@@ -6,6 +6,7 @@ export const createUserValidator = z.object({
     nome: z.string(),
     usuario: z.string(),
     matricula: z.string(),
+    role: z.enum(["professor", "aluno"]),
     senha: z
         .any()
         .refine((value): value is Password => value instanceof Password, {
@@ -24,6 +25,7 @@ export const createUserValidator = z.object({
 
 export const createUserInputValidator = z.object({
     nome: z.string(),
+    role: z.enum(["professor", "aluno"]),
     curso: z.enum([
         "Ciência da Computação",
         "Arquitetura e Urbanismo",
