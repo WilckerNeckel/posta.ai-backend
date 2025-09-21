@@ -35,6 +35,10 @@ export class User {
         return this._usuario;
     }
 
+    public async matchPassord(plainPassword: string) {
+        return await this.senha.matches(plainPassword);
+    }
+
     public static async create(input: CreateUserInput): Promise<User> {
         const admisionDate = new Date();
         const matricula = new MatriculaGenarator().generate(admisionDate);
