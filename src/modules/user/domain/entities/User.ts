@@ -1,4 +1,5 @@
 import { CreateUserRequestModel } from "../../application/dtos/CreateUserRequestModel";
+import { Course } from "../enums/Course";
 import { UserRole } from "../enums/UserRole";
 import { MatriculaGenarator } from "../services/MatriculaGenarator";
 import { CreateUser, CreateUserInput } from "../types";
@@ -9,8 +10,8 @@ export class User {
     public readonly id: string;
     public readonly nome: string;
     public readonly matricula: string;
-    private readonly usuario: string;
-    public readonly curso: string;
+    private readonly _usuario: string;
+    public readonly curso: Course;
     private readonly senha: Password;
     public readonly dataAdmissao: Date;
     public readonly role: UserRole;
@@ -19,11 +20,19 @@ export class User {
         this.id = props.id;
         this.nome = props.nome;
         this.matricula = props.matricula;
-        this.usuario = props.usuario;
+        this._usuario = props.usuario;
         this.curso = props.curso;
         this.role = props.role;
         this.senha = props.senha;
         this.dataAdmissao = props.dataAdmissao;
+    }
+
+    get password() {
+        return this.senha.value;
+    }
+
+    get usuario() {
+        return this._usuario;
     }
 
     public static async create(input: CreateUserInput): Promise<User> {

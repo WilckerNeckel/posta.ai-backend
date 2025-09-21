@@ -1,6 +1,7 @@
 import z from "zod";
 import { Password } from "./vos/Password";
 import { UserRole } from "./enums/UserRole";
+import { Course } from "./enums/Course";
 
 export const createUserValidator = z.object({
     id: z.string(),
@@ -13,28 +14,14 @@ export const createUserValidator = z.object({
         .refine((value): value is Password => value instanceof Password, {
             message: "O valor deve ser uma instância de Password",
         }),
-    curso: z.enum([
-        "Ciência da Computação",
-        "Arquitetura e Urbanismo",
-        "Direito",
-        "Matemática",
-        "Engenharia de Produção",
-        "Engenharia de Alimentos",
-    ]),
+    curso: z.nativeEnum(Course),
     dataAdmissao: z.date(),
 });
 
 export const createUserInputValidator = z.object({
     nome: z.string(),
     role: z.nativeEnum(UserRole),
-    curso: z.enum([
-        "Ciência da Computação",
-        "Arquitetura e Urbanismo",
-        "Direito",
-        "Matemática",
-        "Engenharia de Produção",
-        "Engenharia de Alimentos",
-    ]),
+    curso: z.nativeEnum(Course),
     usuario: z.string(),
     senha: z.string().min(6, "A senha deve conter no mínimo 6 caracteres"),
 });

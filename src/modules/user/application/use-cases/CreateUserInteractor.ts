@@ -2,7 +2,7 @@ import { User } from "../../domain/entities/User";
 import { UserGateway } from "../../domain/ports/UserGateway";
 import { BaseUserResponseModel } from "../dtos/BaseUserResponseModel";
 import { CreateUserRequestModel } from "../dtos/CreateUserRequestModel";
-import { UserMapper } from "../UserMapper";
+import { UserMapper } from "../mappers/UserMapper";
 
 export class CreateUserInteractor {
     constructor(private studentGateway: UserGateway) {}
