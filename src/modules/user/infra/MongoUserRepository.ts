@@ -4,10 +4,6 @@ import { UserGateway } from "../domain/ports/UserGateway";
 import { DatabaseError } from "../../shared/errors/DatabaseError";
 import { Db } from "mongodb";
 import { getMongo } from "../../../database/mongo";
-import { CreateUser } from "../domain/types";
-import { Course } from "../domain/enums/Course";
-import { Password } from "../domain/vos/Password";
-import { UserRole } from "../domain/enums/UserRole";
 import { UserDbModel } from "./models";
 import { InfraMapper } from "./InfraMapper";
 import { userDbModelValidator } from "./validators";
@@ -75,6 +71,21 @@ export class MongoUserRepository implements UserGateway {
             if (error instanceof ZodError) throw error;
 
             throw new DatabaseError("Erro ao buscar vários usuários", error);
+        }
+    }
+
+    public async findByUsername(username: string): Promise<User | null> {
+        try {
+            const user = await this.userColl.findOne({ usuario: username });
+            const validated = userDbModelValidator.parse(user);
+
+            if (!user) return null;
+
+            return InfraMapper.fromDbToEntity(validated);
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+
+            throw new DatabaseError("Erro ao buscar usuário por username", error);
         }
     }
 }
