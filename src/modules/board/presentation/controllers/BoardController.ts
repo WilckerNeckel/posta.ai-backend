@@ -31,7 +31,7 @@ export class BoardController {
         request: AuthenticatedRequest,
         reply: FastifyReply
     ) {
-        const { userId } = request.params as { userId?: unknown };
+        const userId = request.user?.userId!;
 
         if (typeof userId !== "string" || userId.length === 0) {
             return reply.status(400).send({ message: "ID inválido" });

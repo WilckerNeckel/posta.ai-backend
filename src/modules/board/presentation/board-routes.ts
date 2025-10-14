@@ -9,7 +9,7 @@ export async function boardRoutes(fastify: FastifyInstance) {
         protectedRoutes.post("/column", async (req, res) => {
             await makeBoardController().createColumn(req, res);
         });
-        protectedRoutes.get("/columns/:userId", async (req, res) => {
+        protectedRoutes.get("/column", async (req, res) => {
             await makeBoardController().findAllColumnsWithTasks(req, res);
         });
         protectedRoutes.delete("/column/:id", async (req, res) => {
