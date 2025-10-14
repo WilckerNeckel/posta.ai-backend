@@ -3,12 +3,12 @@ import authMiddeware from "../../shared/middlewares/auth-middeware";
 import { makeUserController } from "./controllers/UserController";
 
 export async function userRoutes(fastify: FastifyInstance) {
+    fastify.post("/", async (req, res) => {
+        await makeUserController().create(req, res);
+    });
+
     fastify.register(async (protectedRoutes) => {
         protectedRoutes.register(authMiddeware);
-
-        protectedRoutes.post("/", async (req, res) => {
-            await makeUserController().create(req, res);
-        });
 
         protectedRoutes.get("/:id", async (req, res) => {
             await makeUserController().findById(req, res);
