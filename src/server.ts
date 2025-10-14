@@ -3,14 +3,14 @@ import dotenv from "dotenv";
 import Fastify from "fastify";
 import { errorHandler } from "./modules/shared/middlewares/error-middeware";
 import { connectToMongo } from "./database/mongo";
+import { userRoutes } from "./modules/user/presentation/user-routes";
 
 const fastify = Fastify({
     logger: true,
 });
 
 fastify.setErrorHandler(errorHandler);
-// fastify.register(mesasRoutes, { prefix: "/api/mesas" });
-// fastify.register(orderPrintingRoutes, { prefix: "/api/impressoes" });
+fastify.register(userRoutes, { prefix: "/api/users" });
 
 const start = async () => {
     try {
