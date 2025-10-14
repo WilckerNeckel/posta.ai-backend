@@ -4,6 +4,7 @@ import Fastify from "fastify";
 import { errorHandler } from "./modules/shared/middlewares/error-middeware";
 import { connectToMongo } from "./database/mongo";
 import { userRoutes } from "./modules/user/presentation/user-routes";
+import { boardRoutes } from "./modules/board/presentation/board-routes";
 
 const fastify = Fastify({
     logger: true,
@@ -11,6 +12,7 @@ const fastify = Fastify({
 
 fastify.setErrorHandler(errorHandler);
 fastify.register(userRoutes, { prefix: "/api/users" });
+fastify.register(boardRoutes, { prefix: "/api/board" });
 
 const start = async () => {
     try {
