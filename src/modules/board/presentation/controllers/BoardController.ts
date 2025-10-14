@@ -74,7 +74,7 @@ export class BoardController {
     }
 }
 
-export const createBoardController = () => {
+export const makeBoardController = () => {
     const boardGateway = new MongoBoardRepository();
     const createColumnInteractor = new CreateColumnInteractor(boardGateway);
     const createTaskInteractor = new CreateTaskInteractor(boardGateway);

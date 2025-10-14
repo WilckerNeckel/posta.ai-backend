@@ -1,3 +1,4 @@
+import { FastifyReply } from "fastify";
 import { AuthenticatedRequest } from "../../../../shared/types/AuthenticatedRequest";
 import { CreateUserInteractor } from "../../application/use-cases/CreateUserInteractor";
 import { FindManyUsersInteractor } from "../../application/use-cases/FindManyUsersInteractor";
@@ -12,7 +13,7 @@ export class UserController {
         private readonly findManyUsersInteractor: FindManyUsersInteractor
     ) {}
 
-    async create(request: AuthenticatedRequest, reply: any) {
+    async create(request: AuthenticatedRequest, reply: FastifyReply) {
         const validatedInput = createUserInputValidator.parse(request.body);
 
         const user = await this.createUserInteractor.execute(validatedInput);
@@ -20,7 +21,7 @@ export class UserController {
         reply.status(201).send(user);
     }
 
-    async findById(request: AuthenticatedRequest, reply: any) {
+    async findById(request: AuthenticatedRequest, reply: FastifyReply) {
         const { id } = request.params as { id?: unknown };
 
         if (typeof id !== "string" || id.length === 0) {
@@ -32,14 +33,14 @@ export class UserController {
         reply.send(user);
     }
 
-    async findMany(request: AuthenticatedRequest, reply: any) {
+    async findMany(request: AuthenticatedRequest, reply: FastifyReply) {
         const users = await this.findManyUsersInteractor.execute();
 
         reply.send(users);
     }
 }
 
-export const makeUserController = ( ) => {
+export const makeUserController = () => {
     const studentGateway = new MongoUserRepository();
     const createUserInteractor = new CreateUserInteractor(studentGateway);
     const getUserByIdInteractor = new GetUserByIdInteractor(studentGateway);
