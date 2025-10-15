@@ -13,7 +13,7 @@ export async function boardRoutes(fastify: FastifyInstance) {
             await makeBoardController().findAllColumnsWithTasks(req, res);
         });
 
-        protectedRoutes.post("/column/:id/move", async (req, res) => {
+        protectedRoutes.patch("/column/:id/move", async (req, res) => {
             await makeBoardController().moveColumnOrdem(req, res);
         });
 
@@ -28,7 +28,7 @@ export async function boardRoutes(fastify: FastifyInstance) {
             await makeBoardController().deleteTaskById(req, res);
         });
 
-        protectedRoutes.post("/task/:id/move", async (req, res) => {
+        protectedRoutes.patch("/task/:id/move", async (req, res) => {
             await makeBoardController().moveTaskOrdem(req, res);
         });
     });

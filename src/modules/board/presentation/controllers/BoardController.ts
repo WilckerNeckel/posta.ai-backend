@@ -25,8 +25,12 @@ export class BoardController {
     ) {}
 
     async createColumn(request: AuthenticatedRequest, reply: FastifyReply) {
-        const validatedBody = createColumnValidator.parse(request.body);
-
+        const validatedBody = createColumnValidator.parse({
+            ...(typeof request.body === "object" && request.body !== null
+                ? request.body
+                : {}),
+            userId: request.user?.userId!,
+        });
         const column = await this.createColumnInteractor.execute(validatedBody);
 
         reply.status(201).send(column);
