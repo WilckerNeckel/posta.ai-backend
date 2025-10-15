@@ -16,6 +16,7 @@ import {
     columnWithTasksValidator,
     taskValidator,
 } from "../domain/validators";
+import { logger } from "../../../shared/logging/logger";
 
 export class MongoBoardRepository implements BoardGateway {
     readonly mongo: Db = getMongo();
@@ -166,11 +167,60 @@ export class MongoBoardRepository implements BoardGateway {
                     { session }
                 );
             });
-
-            console.log("Reordenação concluída com sucesso!");
+            logger.info(
+                `Task movida { taskId: ${taskId}, columnId: ${columnId}}`
+            );
         } catch (error) {
             if (error instanceof ZodError) throw error;
             throw new DatabaseError("Erro mover task", error);
+        }
+    }
+
+    public async moveColumnOrdem(
+        columnId: string,
+        userId: string,
+        currentPosition: number,
+        newPosition: number
+    ): Promise<void> {
+        try {
+            const client = getMongoClient();
+            const session = client.startSession();
+
+            await session.withTransaction(async () => {
+                if (newPosition < currentPosition) {
+                    // Move up: increase ordem by +1 for those between newPosition and currentPosition - 1
+                    await this.columnColl.updateMany(
+                        {
+                            userId,
+                            ordem: { $gte: newPosition, $lt: currentPosition },
+                        },
+                        { $inc: { ordem: 1 } },
+                        { session }
+                    );
+                } else if (newPosition > currentPosition) {
+                    await this.columnColl.updateMany(
+                        {
+                            userId,
+                            ordem: { $lte: newPosition, $gt: currentPosition },
+                        },
+                        { $inc: { ordem: -1 } },
+                        { session }
+                    );
+                }
+
+                await this.columnColl.updateOne(
+                    { id: columnId },
+                    { $set: { ordem: newPosition } },
+                    { session }
+                );
+            });
+
+            logger.info(
+                `Coluna movida { columnId: ${columnId}, userId: ${userId}}`
+            );
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError("Erro mover coluna", error);
         }
     }
 }

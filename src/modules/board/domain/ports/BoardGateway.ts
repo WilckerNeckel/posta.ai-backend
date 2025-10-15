@@ -13,7 +13,12 @@ export interface BoardGateway {
         currentPosition: number,
         newPosition: number
     ): Promise<void>;
-
+    moveColumnOrdem(
+        columnId: string,
+        userId: string,
+        currentPosition: number,
+        newPosition: number
+    ): Promise<void>;
     createColumn(column: CreateColumn): Promise<Column>;
     deleteColumn(columnId: string): Promise<void>;
     createTask(task: CreateTask): Promise<Task>;
