@@ -23,6 +23,18 @@ export class MongoBoardRepository implements BoardGateway {
     private readonly columnColl = this.mongo.collection("columns");
     private readonly taskColl = this.mongo.collection("tasks");
 
+    public async getColumnById(columnId: string): Promise<Column | null> {
+        try {
+            const column = await this.columnColl.findOne({ id: columnId });
+            if (!column) return null;
+
+            return columnValidator.parse(column);
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError("Erro ao buscar coluna", error);
+        }
+    }
+
     public async findAllColumnsWithTasks(
         userId: string
     ): Promise<ColumnWithTasks[]> {
@@ -89,6 +101,18 @@ export class MongoBoardRepository implements BoardGateway {
         } catch (error) {
             if (error instanceof ZodError) throw error;
             throw new DatabaseError("Erro ao deletar coluna", error);
+        }
+    }
+
+    public async getTaskById(taskId: string): Promise<Task | null> {
+        try {
+            const task = await this.taskColl.findOne({ id: taskId });
+            if (!task) return null;
+
+            return taskValidator.parse(task);
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError("Erro ao buscar task", error);
         }
     }
 

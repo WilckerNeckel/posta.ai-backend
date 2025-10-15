@@ -7,6 +7,8 @@ import {
 } from "../types";
 
 export interface BoardGateway {
+    getTaskById(taskId: string): Promise<Task | null>;
+    getColumnById(columnId: string): Promise<Column | null>;
     moveTaskOrdem(
         taskId: string,
         columnId: string,
