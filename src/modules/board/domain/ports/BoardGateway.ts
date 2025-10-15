@@ -9,6 +9,8 @@ import {
 export interface BoardGateway {
     getTaskById(taskId: string): Promise<Task | null>;
     getColumnById(columnId: string): Promise<Column | null>;
+    getLastTaskOrdemInColumn(columnId: string): Promise<number>;
+    getLastColumnOrdemByUserId(userId: string): Promise<number>;
     moveTaskOrdem(
         taskId: string,
         columnId: string,

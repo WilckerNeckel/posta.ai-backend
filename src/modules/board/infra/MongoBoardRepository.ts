@@ -35,6 +35,40 @@ export class MongoBoardRepository implements BoardGateway {
         }
     }
 
+    public async getLastColumnOrdemByUserId(userId: string): Promise<number> {
+        try {
+            return await this.columnColl
+                .find({ userId })
+                .sort({ ordem: -1 })
+                .limit(1)
+                .next()
+                .then((col) => (col ? col.ordem : 0));
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError(
+                "Erro ao buscar última ordem da coluna",
+                error
+            );
+        }
+    }
+
+    public async getLastTaskOrdemInColumn(columnId: string): Promise<number> {
+        try {
+            return await this.taskColl
+                .find({ columnId })
+                .sort({ ordem: -1 })
+                .limit(1)
+                .next()
+                .then((task) => (task ? task.ordem : 0));
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError(
+                "Erro ao buscar última ordem da task",
+                error
+            );
+        }
+    }
+
     public async findAllColumnsWithTasks(
         userId: string
     ): Promise<ColumnWithTasks[]> {

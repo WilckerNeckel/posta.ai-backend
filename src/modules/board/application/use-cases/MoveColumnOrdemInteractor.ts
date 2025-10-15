@@ -12,6 +12,14 @@ export class MoveColumnOrdemInteractor {
 
         const currentPosition = currentColumn.ordem;
 
+        const lastOrdem = await this.boardGateway.getLastColumnOrdemByUserId(
+            userId
+        );
+        if (newPosition < 1 || newPosition > lastOrdem)
+            throw new Error("Posição inválida");
+
+        if (newPosition === currentColumn.ordem) return;
+
         await this.boardGateway.moveColumnOrdem(
             columnId,
             userId,
