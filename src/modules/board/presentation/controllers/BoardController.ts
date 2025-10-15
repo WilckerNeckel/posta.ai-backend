@@ -9,6 +9,9 @@ import {
 } from "../../domain/validators";
 import { AuthenticatedRequest } from "../../../../shared/types/AuthenticatedRequest";
 import { MongoBoardRepository } from "../../infra/MongoBoardRepository";
+import { MoveTaskOrdemInteractor } from "../../application/use-cases/MoveTaskOrdemInteractor";
+import { MoveColumnOrdemInteractor } from "../../application/use-cases/MoveColumnOrdemInteractor";
+import z from "zod";
 
 export class BoardController {
     constructor(
@@ -16,7 +19,9 @@ export class BoardController {
         private readonly createTaskInteractor: CreateTaskInteractor,
         private readonly deleteTaskByIdInteractor: DeleteTaskInteractor,
         private readonly deleteColumnByIdInteractor: DeleteTaskInteractor,
-        private readonly findAllColumnsWithTasksInteractor: FindAllColumnsWithTasksInteractor
+        private readonly findAllColumnsWithTasksInteractor: FindAllColumnsWithTasksInteractor,
+        private readonly moveTaskOrdemInteractor: MoveTaskOrdemInteractor,
+        private readonly moveColumnOrdemInteractor: MoveColumnOrdemInteractor
     ) {}
 
     async createColumn(request: AuthenticatedRequest, reply: FastifyReply) {
@@ -72,6 +77,57 @@ export class BoardController {
 
         reply.status(204).send();
     }
+
+    async moveTaskOrdem(request: AuthenticatedRequest, reply: FastifyReply) {
+        const { novaPosicao } = request.body as {
+            novaPosicao?: unknown;
+        };
+
+        const { id } = request.params as {
+            id?: unknown;
+        };
+
+        const bodyValidator = z.number().int().min(1, "Nova posição inválida");
+        const taskIdValidator = z.string().min(1, "ID da tarefa inválido");
+
+        const newPosition = bodyValidator.parse(novaPosicao);
+        const taskIdValidated = taskIdValidator.parse(id);
+
+        await this.moveTaskOrdemInteractor.execute(
+            taskIdValidated,
+            newPosition
+        );
+
+        reply.status(204).send();
+    }
+
+    async moveColumnOrdem(request: AuthenticatedRequest, reply: FastifyReply) {
+        const { novaPosicao } = request.body as {
+            novaPosicao?: unknown;
+        };
+
+        const { id } = request.params as {
+            id?: unknown;
+        };
+
+        const userId = request.user?.userId!;
+
+        const bodyValidator = z.number().int().min(1, "Nova posição inválida");
+        const columnIdValidator = z.string().min(1, "ID da coluna inválido");
+        const userIdValidator = z.string().min(1, "ID do usuário inválido");
+
+        const newPosition = bodyValidator.parse(novaPosicao);
+        const columnIdValidated = columnIdValidator.parse(id);
+        const userIdValidated = userIdValidator.parse(userId);
+
+        await this.moveColumnOrdemInteractor.execute(
+            columnIdValidated,
+            userIdValidated,
+            newPosition
+        );
+
+        reply.status(204).send();
+    }
 }
 
 export const makeBoardController = () => {
@@ -83,11 +139,18 @@ export const makeBoardController = () => {
     const findAllColumnsWithTasksInteractor =
         new FindAllColumnsWithTasksInteractor(boardGateway);
 
+    const moveTaskOrdemInteractor = new MoveTaskOrdemInteractor(boardGateway);
+    const moveColumnOrdemInteractor = new MoveColumnOrdemInteractor(
+        boardGateway
+    );
+
     return new BoardController(
         createColumnInteractor,
         createTaskInteractor,
         deleteTaskByIdInteractor,
         deleteColumnByIdInteractor,
-        findAllColumnsWithTasksInteractor
+        findAllColumnsWithTasksInteractor,
+        moveTaskOrdemInteractor,
+        moveColumnOrdemInteractor
     );
 };
