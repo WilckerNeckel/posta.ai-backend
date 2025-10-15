@@ -158,41 +158,34 @@ export class MongoBoardRepository implements BoardGateway {
         newPosition: number
     ): Promise<void> {
         try {
-            const client = getMongoClient();
-            const session = client.startSession();
-
-            await session.withTransaction(async () => {
-                if (newPosition < currentPosition) {
-                    // Move up: increase ordem by +1 for those between newPosition and currentPosition - 1
-                    await this.taskColl.updateMany(
-                        {
-                            columnId: columnId,
-                            ordem: { $gte: newPosition, $lt: currentPosition },
-                        },
-                        { $inc: { ordem: 1 } },
-                        { session }
-                    );
-                } else if (newPosition > currentPosition) {
-                    // Move down: decrease ordem by -1 for those between currentPosition + 1 and newPosition
-                    await this.taskColl.updateMany(
-                        {
-                            columnId: columnId,
-                            ordem: { $lte: newPosition, $gt: currentPosition },
-                        },
-                        { $inc: { ordem: -1 } },
-                        { session }
-                    );
-                }
-
-                // Update target produto
-                await this.taskColl.updateOne(
-                    { id: taskId },
-                    { $set: { ordem: newPosition } },
-                    { session }
+            if (newPosition < currentPosition) {
+                // Move up: increase ordem by +1 for those between newPosition and currentPosition - 1
+                await this.taskColl.updateMany(
+                    {
+                        columnId: columnId,
+                        ordem: { $gte: newPosition, $lt: currentPosition },
+                    },
+                    { $inc: { ordem: 1 } }
                 );
-            });
+            } else if (newPosition > currentPosition) {
+                // Move down: decrease ordem by -1 for those between currentPosition + 1 and newPosition
+                await this.taskColl.updateMany(
+                    {
+                        columnId: columnId,
+                        ordem: { $lte: newPosition, $gt: currentPosition },
+                    },
+                    { $inc: { ordem: -1 } }
+                );
+            }
+
+            // Update target task
+            await this.taskColl.updateOne(
+                { id: taskId },
+                { $set: { ordem: newPosition } }
+            );
+
             logger.info(
-                `Task movida { taskId: ${taskId}, columnId: ${columnId}}`
+                `Task movida { taskId: ${taskId}, columnId: ${columnId}, ordem: ${newPosition} }`
             );
         } catch (error) {
             if (error instanceof ZodError) throw error;
@@ -207,40 +200,34 @@ export class MongoBoardRepository implements BoardGateway {
         newPosition: number
     ): Promise<void> {
         try {
-            const client = getMongoClient();
-            const session = client.startSession();
-
-            await session.withTransaction(async () => {
-                if (newPosition < currentPosition) {
-                    // Move up: increase ordem by +1 for those between newPosition and currentPosition - 1
-                    await this.columnColl.updateMany(
-                        {
-                            userId,
-                            ordem: { $gte: newPosition, $lt: currentPosition },
-                        },
-                        { $inc: { ordem: 1 } },
-                        { session }
-                    );
-                } else if (newPosition > currentPosition) {
-                    await this.columnColl.updateMany(
-                        {
-                            userId,
-                            ordem: { $lte: newPosition, $gt: currentPosition },
-                        },
-                        { $inc: { ordem: -1 } },
-                        { session }
-                    );
-                }
-
-                await this.columnColl.updateOne(
-                    { id: columnId },
-                    { $set: { ordem: newPosition } },
-                    { session }
+            if (newPosition < currentPosition) {
+                // Move up: increase ordem by +1 for those between newPosition and currentPosition - 1
+                await this.columnColl.updateMany(
+                    {
+                        userId,
+                        ordem: { $gte: newPosition, $lt: currentPosition },
+                    },
+                    { $inc: { ordem: 1 } }
                 );
-            });
+            } else if (newPosition > currentPosition) {
+                // Move down: decrease ordem by -1 for those between currentPosition + 1 and newPosition
+                await this.columnColl.updateMany(
+                    {
+                        userId,
+                        ordem: { $lte: newPosition, $gt: currentPosition },
+                    },
+                    { $inc: { ordem: -1 } }
+                );
+            }
+
+            // Update target column
+            await this.columnColl.updateOne(
+                { id: columnId },
+                { $set: { ordem: newPosition } }
+            );
 
             logger.info(
-                `Coluna movida { columnId: ${columnId}, userId: ${userId}}`
+                `Coluna movida { columnId: ${columnId}, userId: ${userId}, ordem: ${newPosition} }`
             );
         } catch (error) {
             if (error instanceof ZodError) throw error;
