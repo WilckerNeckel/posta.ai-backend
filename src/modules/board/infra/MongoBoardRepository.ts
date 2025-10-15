@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import { getMongo } from "../../../database/mongo";
+import { getMongo, getMongoClient } from "../../../database/mongo";
 import { BoardGateway } from "../domain/ports/BoardGateway";
 import {
     CreateColumn,
@@ -123,6 +123,54 @@ export class MongoBoardRepository implements BoardGateway {
         } catch (error) {
             if (error instanceof ZodError) throw error;
             throw new DatabaseError("Erro ao deletar task", error);
+        }
+    }
+
+    public async moveTaskOrdem(
+        taskId: string,
+        columnId: string,
+        currentPosition: number,
+        newPosition: number
+    ): Promise<void> {
+        try {
+            const client = getMongoClient();
+            const session = client.startSession();
+
+            await session.withTransaction(async () => {
+                if (newPosition < currentPosition) {
+                    // Move up: increase ordem by +1 for those between newPosition and currentPosition - 1
+                    await this.taskColl.updateMany(
+                        {
+                            columnId: columnId,
+                            ordem: { $gte: newPosition, $lt: currentPosition },
+                        },
+                        { $inc: { ordem: 1 } },
+                        { session }
+                    );
+                } else if (newPosition > currentPosition) {
+                    // Move down: decrease ordem by -1 for those between currentPosition + 1 and newPosition
+                    await this.taskColl.updateMany(
+                        {
+                            columnId: columnId,
+                            ordem: { $lte: newPosition, $gt: currentPosition },
+                        },
+                        { $inc: { ordem: -1 } },
+                        { session }
+                    );
+                }
+
+                // Update target produto
+                await this.taskColl.updateOne(
+                    { id: taskId },
+                    { $set: { ordem: newPosition } },
+                    { session }
+                );
+            });
+
+            console.log("Reordenação concluída com sucesso!");
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError("Erro mover task", error);
         }
     }
 }
