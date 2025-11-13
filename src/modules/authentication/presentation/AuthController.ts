@@ -3,6 +3,7 @@ import { AuthenticatedRequest } from "../../../shared/types/AuthenticatedRequest
 import { LoginUseCase } from "../application/LoginUseCase";
 import { loginValidator } from "../application/loginValidator";
 import { MongoUserRepository } from "../../user/infra/MongoUserRepository";
+import { DisciplineMongoRepository } from "../../discipline/infra/DisciplineMongoRepository";
 
 export class AuthController {
     constructor(private authUserInteractor: LoginUseCase) {}
@@ -20,7 +21,8 @@ export class AuthController {
 }
 
 export const makeAuthController = () => {
-    const userGateway = new MongoUserRepository();
+    const disciplineGateway = new DisciplineMongoRepository();
+    const userGateway = new MongoUserRepository(disciplineGateway);
     const loginUseCase = new LoginUseCase(userGateway);
     return new AuthController(loginUseCase);
 };

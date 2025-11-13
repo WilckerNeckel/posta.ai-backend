@@ -2,6 +2,7 @@ import z from "zod";
 import { Password } from "./vos/Password";
 import { UserRole } from "./enums/UserRole";
 import { Course } from "./enums/Course";
+import { disciplineValidator } from "../../discipline/domain/validators";
 
 export const createUserValidator = z.object({
     id: z.string(),
@@ -15,6 +16,7 @@ export const createUserValidator = z.object({
             message: "O valor deve ser uma instância de Password",
         }),
     curso: z.nativeEnum(Course),
+    disciplinas: z.array(disciplineValidator),
     dataAdmissao: z.date(),
 });
 
@@ -23,6 +25,7 @@ export const createUserInputValidator = z.object({
     role: z.nativeEnum(UserRole),
     curso: z.nativeEnum(Course),
     usuario: z.string(),
+    disciplinasIds: z.array(z.string()).min(1, "Deve haver pelo menos uma disciplina"),
     senha: z.string().min(6, "A senha deve conter no mínimo 6 caracteres"),
 });
 

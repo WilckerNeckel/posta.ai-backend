@@ -5,6 +5,7 @@ import { FindManyUsersInteractor } from "../../application/use-cases/FindManyUse
 import { GetUserByIdInteractor } from "../../application/use-cases/GetUserByIdInteractor";
 import { createUserInputValidator } from "../../domain/validators";
 import { MongoUserRepository } from "../../infra/MongoUserRepository";
+import { DisciplineMongoRepository } from "../../../discipline/infra/DisciplineMongoRepository";
 
 export class UserController {
     constructor(
@@ -41,8 +42,9 @@ export class UserController {
 }
 
 export const makeUserController = () => {
-    const studentGateway = new MongoUserRepository();
-    const createUserInteractor = new CreateUserInteractor(studentGateway);
+    const disciplineGateway = new DisciplineMongoRepository();
+    const studentGateway = new MongoUserRepository(disciplineGateway);
+    const createUserInteractor = new CreateUserInteractor(studentGateway, disciplineGateway);
     const getUserByIdInteractor = new GetUserByIdInteractor(studentGateway);
     const findManyUsersInteractor = new FindManyUsersInteractor(studentGateway);
 

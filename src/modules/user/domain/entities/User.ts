@@ -1,14 +1,16 @@
+import { Discipline } from "../../../discipline/domain/types";
 import { CreateUserRequestModel } from "../../application/dtos/CreateUserRequestModel";
 import { Course } from "../enums/Course";
 import { UserRole } from "../enums/UserRole";
 import { MatriculaGenarator } from "../services/MatriculaGenarator";
-import { CreateUser, CreateUserInput } from "../types";
+import { CreateUser, CreateUserInput, UpdateUserInput } from "../types";
 import { createUserValidator } from "../validators";
 import { Password } from "../vos/Password";
 
 export class User {
     public readonly id: string;
     public readonly nome: string;
+    public readonly disciplinas: Discipline[];
     public readonly matricula: string;
     private readonly _usuario: string;
     public readonly curso: Course;
@@ -19,6 +21,7 @@ export class User {
     private constructor(props: CreateUser) {
         this.id = props.id;
         this.nome = props.nome;
+        this.disciplinas = props.disciplinas;
         this.matricula = props.matricula;
         this._usuario = props.usuario;
         this.curso = props.curso;
@@ -39,7 +42,11 @@ export class User {
         return await this.senha.matches(plainPassword);
     }
 
-    public static async create(input: CreateUserInput): Promise<User> {
+    public static async create(
+        input: Omit<CreateUserInput, "disciplinasIds"> & {
+            disciplinas: Discipline[];
+        }
+    ): Promise<User> {
         const admisionDate = new Date();
         const matricula = new MatriculaGenarator().generate(admisionDate);
         const resolvedInput = {
@@ -61,13 +68,19 @@ export class User {
     }
 
     public async copyWith(
-        input: Partial<CreateUserRequestModel>
+        input: Omit<UpdateUserInput, "disciplinasIds"> & {
+            disciplinas?: Discipline[];
+        }
     ): Promise<User> {
         const updatedData = {
             id: this.id,
             matricula: this.matricula,
+            disciplinas:
+                input.disciplinas && input.disciplinas.length > 0
+                    ? input.disciplinas
+                    : this.disciplinas,
             dataAdmissao: this.dataAdmissao,
-            role: input.role ?? this.role,
+            role: this.role,
             nome: input.nome ?? this.nome,
             curso: input.curso ?? (this.curso as CreateUser["curso"]),
             usuario: input.usuario ?? this.usuario,
