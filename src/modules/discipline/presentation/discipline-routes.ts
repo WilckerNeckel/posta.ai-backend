@@ -20,5 +20,12 @@ export async function disciplineRoutes(fastify: FastifyInstance) {
                 res
             );
         });
+
+        protectedRoutes.post("/:disciplineId/:studentId", async (req, res) => {
+            await makeDisciplineController().attributeTeacherInDiscipline(
+                req,
+                res
+            );
+        });
     });
 }

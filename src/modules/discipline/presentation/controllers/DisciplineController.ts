@@ -6,12 +6,14 @@ import { FindManyDisciplinesInteractor } from "../../application/use-cases/FindM
 import { disciplineValidator } from "../../domain/validators";
 import { DisciplineMongoRepository } from "../../infra/DisciplineMongoRepository";
 import { MongoUserRepository } from "../../../user/infra/MongoUserRepository";
+import { AttributeTeacherInDisciplineInteractor } from "../../application/use-cases/AttributeTeacherInDiscipline";
 
 export class DisciplineController {
     constructor(
         private readonly createDisciplineInteractor: CreateDisciplineInteractor,
         private readonly findManyDisciplinesInteractor: FindManyDisciplinesInteractor,
-        private readonly enrollStudentInDisciplineInteractor: EnrollStudentInDisciplineInteractor
+        private readonly enrollStudentInDisciplineInteractor: EnrollStudentInDisciplineInteractor,
+        private readonly attributeTeacherInDisciplineInteractor: AttributeTeacherInDisciplineInteractor
     ) {}
 
     async createDiscipline(req: AuthenticatedRequest, res: FastifyReply) {
@@ -44,6 +46,23 @@ export class DisciplineController {
 
         res.status(204).send();
     }
+
+    async attributeTeacherInDiscipline(
+        req: AuthenticatedRequest,
+        res: FastifyReply
+    ) {
+        const { disciplineId, studentId } = req.params as {
+            disciplineId: string;
+            studentId: string;
+        };
+
+        await this.attributeTeacherInDisciplineInteractor.execute(
+            disciplineId,
+            studentId
+        );
+
+        res.status(204).send();
+    }
 }
 
 export const makeDisciplineController = () => {
@@ -58,9 +77,16 @@ export const makeDisciplineController = () => {
     const enrollStudentInDisciplineInteractor =
         new EnrollStudentInDisciplineInteractor(disciplineGateway, userGateway);
 
+    const attributeTeacherInDisciplineInteractor =
+        new AttributeTeacherInDisciplineInteractor(
+            disciplineGateway,
+            userGateway
+        );
+
     return new DisciplineController(
         createDisciplineInteractor,
         findManyDisciplinesInteractor,
-        enrollStudentInDisciplineInteractor
+        enrollStudentInDisciplineInteractor,
+        attributeTeacherInDisciplineInteractor
     );
 };
