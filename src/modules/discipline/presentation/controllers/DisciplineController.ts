@@ -3,7 +3,7 @@ import { AuthenticatedRequest } from "../../../../shared/types/AuthenticatedRequ
 import { CreateDisciplineInteractor } from "../../application/use-cases/CreateDisciplineInteractor";
 import { EnrollStudentInDisciplineInteractor } from "../../application/use-cases/EnrolIStudentInDisciplineInteractor";
 import { FindManyDisciplinesInteractor } from "../../application/use-cases/FindManyDisciplinesInteractor";
-import { disciplineValidator } from "../../domain/validators";
+import { createDisciplineValidator } from "../../domain/validators";
 import { DisciplineMongoRepository } from "../../infra/DisciplineMongoRepository";
 import { MongoUserRepository } from "../../../user/infra/MongoUserRepository";
 import { AttributeTeacherInDisciplineInteractor } from "../../application/use-cases/AttributeTeacherInDiscipline";
@@ -17,7 +17,7 @@ export class DisciplineController {
     ) {}
 
     async createDiscipline(req: AuthenticatedRequest, res: FastifyReply) {
-        const validated = disciplineValidator.parse(req.body);
+        const validated = createDisciplineValidator.parse(req.body);
 
         const discipline = await this.createDisciplineInteractor.execute(
             validated
