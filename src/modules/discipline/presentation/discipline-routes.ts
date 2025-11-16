@@ -14,14 +14,14 @@ export async function disciplineRoutes(fastify: FastifyInstance) {
             await makeDisciplineController().findManyDisciplines(req, res);
         });
 
-        protectedRoutes.post("/:disciplineId/:studentId", async (req, res) => {
+        protectedRoutes.post("/:disciplineId/enroll-student/:studentId", async (req, res) => {
             await makeDisciplineController().enrollStudentInDiscipline(
                 req,
                 res
             );
         });
 
-        protectedRoutes.post("/:disciplineId/:studentId", async (req, res) => {
+        protectedRoutes.post("/:disciplineId/attribute-teacher/:teacherId", async (req, res) => {
             await makeDisciplineController().attributeTeacherInDiscipline(
                 req,
                 res

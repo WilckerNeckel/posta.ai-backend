@@ -51,14 +51,14 @@ export class DisciplineController {
         req: AuthenticatedRequest,
         res: FastifyReply
     ) {
-        const { disciplineId, studentId } = req.params as {
+        const { disciplineId, teacherId } = req.params as {
             disciplineId: string;
-            studentId: string;
+            teacherId: string;
         };
 
         await this.attributeTeacherInDisciplineInteractor.execute(
             disciplineId,
-            studentId
+            teacherId
         );
 
         res.status(204).send();
