@@ -6,6 +6,7 @@ import { connectToMongo } from "./database/mongo";
 import { userRoutes } from "./modules/user/presentation/user-routes";
 import { boardRoutes } from "./modules/board/presentation/board-routes";
 import { authRoutes } from "./modules/authentication/presentation/auth-routes";
+import { disciplineRoutes } from "./modules/discipline/presentation/discipline-routes";
 
 const fastify = Fastify({
     logger: true,
@@ -15,6 +16,7 @@ fastify.setErrorHandler(errorHandler);
 fastify.register(userRoutes, { prefix: "/api/users" });
 fastify.register(boardRoutes, { prefix: "/api/board" });
 fastify.register(authRoutes, { prefix: "/api/auth" });
+fastify.register(disciplineRoutes, { prefix: "/api/disciplines" });
 
 const start = async () => {
     try {
