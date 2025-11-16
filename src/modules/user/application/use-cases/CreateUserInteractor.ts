@@ -19,7 +19,7 @@ export class CreateUserInteractor {
         const isProfessor = input.role === UserRole.professor;
 
         const disciplines = await this.ensureDisciplinesExists(
-            input.disciplinasIds,
+            input.disciplinasIds ?? [],
             isProfessor
         );
         const user = await User.create({

@@ -25,7 +25,9 @@ export const createUserInputValidator = z.object({
     role: z.nativeEnum(UserRole),
     curso: z.nativeEnum(Course),
     usuario: z.string(),
-    disciplinasIds: z.array(z.string()).min(1, "Deve haver pelo menos uma disciplina"),
+    // disciplinasIds: z.array(z.string()).min(1, "Deve haver pelo menos uma disciplina"),
+    disciplinasIds: z.array(z.string()).optional(),
+
     senha: z.string().min(6, "A senha deve conter no mínimo 6 caracteres"),
 });
 

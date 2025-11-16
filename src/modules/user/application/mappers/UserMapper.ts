@@ -9,6 +9,7 @@ export class UserMapper {
             id: student.id,
             nome: student.nome,
             matricula: student.matricula,
+            role: student.role,
             curso: student.curso.toString(),
             dataAdmissao: student.dataAdmissao,
         };
