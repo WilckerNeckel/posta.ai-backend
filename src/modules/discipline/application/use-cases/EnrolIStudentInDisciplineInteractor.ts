@@ -2,7 +2,7 @@ import { UserGateway } from "../../../user";
 import { UserMapper } from "../../../user/application/mappers/UserMapper";
 import { DisciplineGateway } from "../../domain/DisciplineGateway";
 
-export class EnrollUserInDisciplineInteractor {
+export class EnrollStudentInDisciplineInteractor {
     constructor(
         private disciplineGateway: DisciplineGateway,
         private userGateway: UserGateway
@@ -14,10 +14,16 @@ export class EnrollUserInDisciplineInteractor {
             userId
         );
 
+        if (user.isProfessor) {
+            throw new Error(
+                `Usuário com ID ${userId} não é um estudante e não pode ser matriculado em disciplinas.`
+            );
+        }
+
         const alreadyEnrolled = user.disciplinas.some(
             (d) => d.id === discipline.id
         );
-        
+
         if (alreadyEnrolled) {
             throw new Error(
                 `Usuário com ID ${userId} já está matriculado na disciplina com ID ${disciplineId}.`
@@ -26,7 +32,9 @@ export class EnrollUserInDisciplineInteractor {
 
         const updatedDisciplines = [...user.disciplinas, discipline];
 
-        const updatedUser = await  user.copyWith({ disciplinas: updatedDisciplines });
+        const updatedUser = await user.copyWith({
+            disciplinas: updatedDisciplines,
+        });
 
         const savedUser = await this.userGateway.save(updatedUser);
 

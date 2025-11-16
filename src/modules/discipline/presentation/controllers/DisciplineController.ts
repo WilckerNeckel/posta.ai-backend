@@ -1,7 +1,7 @@
 import { FastifyReply } from "fastify";
 import { AuthenticatedRequest } from "../../../../shared/types/AuthenticatedRequest";
 import { CreateDisciplineInteractor } from "../../application/use-cases/CreateDisciplineInteractor";
-import { EnrollUserInDisciplineInteractor } from "../../application/use-cases/EnrollUserInDisciplineInteractor";
+import { EnrollStudentInDisciplineInteractor } from "../../application/use-cases/EnrolIStudentInDisciplineInteractor";
 import { FindManyDisciplinesInteractor } from "../../application/use-cases/FindManyDisciplinesInteractor";
 import { disciplineValidator } from "../../domain/validators";
 import { DisciplineMongoRepository } from "../../infra/DisciplineMongoRepository";
@@ -11,7 +11,7 @@ export class DisciplineController {
     constructor(
         private readonly createDisciplineInteractor: CreateDisciplineInteractor,
         private readonly findManyDisciplinesInteractor: FindManyDisciplinesInteractor,
-        private readonly enrollStudentInDisciplineInteractor: EnrollUserInDisciplineInteractor
+        private readonly enrollStudentInDisciplineInteractor: EnrollStudentInDisciplineInteractor
     ) {}
 
     async createDiscipline(req: AuthenticatedRequest, res: FastifyReply) {
@@ -56,7 +56,7 @@ export const makeDisciplineController = () => {
         disciplineGateway
     );
     const enrollStudentInDisciplineInteractor =
-        new EnrollUserInDisciplineInteractor(disciplineGateway, userGateway);
+        new EnrollStudentInDisciplineInteractor(disciplineGateway, userGateway);
 
     return new DisciplineController(
         createDisciplineInteractor,
