@@ -4,6 +4,7 @@ import { Course } from "../../user/domain/enums/Course";
 export const disciplineValidator = z.object({
     id: z.string(),
     name: z.string().min(1, "Discipline name is required"),
+    professorId: z.string().nullable().optional(),
     curso: z.nativeEnum(Course),
 });
 

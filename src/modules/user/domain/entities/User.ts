@@ -38,6 +38,10 @@ export class User {
         return this._usuario;
     }
 
+    get isProfessor() {
+        return this.role === UserRole.professor;
+    }
+
     public async matchPassord(plainPassword: string) {
         return await this.senha.matches(plainPassword);
     }
