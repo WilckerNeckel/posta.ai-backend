@@ -1,3 +1,4 @@
+import { BoardGateway } from "../../../board/domain/ports/BoardGateway";
 import { UserGateway } from "../../../user";
 import { UserMapper } from "../../../user/application/mappers/UserMapper";
 import { DisciplineGateway } from "../../domain/DisciplineGateway";
@@ -5,7 +6,8 @@ import { DisciplineGateway } from "../../domain/DisciplineGateway";
 export class EnrollStudentInDisciplineInteractor {
     constructor(
         private disciplineGateway: DisciplineGateway,
-        private userGateway: UserGateway
+        private userGateway: UserGateway,
+        private boardGateway: BoardGateway
     ) {}
 
     async execute(userId: string, disciplineId: string) {
@@ -34,6 +36,11 @@ export class EnrollStudentInDisciplineInteractor {
 
         const updatedUser = await user.copyWith({
             disciplinas: updatedDisciplines,
+        });
+
+        await this.boardGateway.createColumn({
+            titulo: discipline.name,
+            userId: user.id,
         });
 
         const persistedUser = await this.userGateway.update(updatedUser);

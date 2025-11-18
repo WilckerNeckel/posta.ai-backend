@@ -7,6 +7,7 @@ import { createDisciplineValidator } from "../../domain/validators";
 import { DisciplineMongoRepository } from "../../infra/DisciplineMongoRepository";
 import { MongoUserRepository } from "../../../user/infra/MongoUserRepository";
 import { AttributeTeacherInDisciplineInteractor } from "../../application/use-cases/AttributeTeacherInDiscipline";
+import { MongoBoardRepository } from "../../../board/infra/MongoBoardRepository";
 
 export class DisciplineController {
     constructor(
@@ -74,8 +75,14 @@ export const makeDisciplineController = () => {
     const findManyDisciplinesInteractor = new FindManyDisciplinesInteractor(
         disciplineGateway
     );
+
+    const boardGateway = new MongoBoardRepository();
     const enrollStudentInDisciplineInteractor =
-        new EnrollStudentInDisciplineInteractor(disciplineGateway, userGateway);
+        new EnrollStudentInDisciplineInteractor(
+            disciplineGateway,
+            userGateway,
+            boardGateway
+        );
 
     const attributeTeacherInDisciplineInteractor =
         new AttributeTeacherInDisciplineInteractor(
