@@ -12,13 +12,14 @@ import { MongoBoardRepository } from "../../infra/MongoBoardRepository";
 import { MoveTaskOrdemInteractor } from "../../application/use-cases/MoveTaskOrdemInteractor";
 import { MoveColumnOrdemInteractor } from "../../application/use-cases/MoveColumnOrdemInteractor";
 import z from "zod";
+import { DeleteColumnInteractor } from "../../application/use-cases/DeleteColumnInteractor";
 
 export class BoardController {
     constructor(
         private readonly createColumnInteractor: CreateColumnInteractor,
         private readonly createTaskInteractor: CreateTaskInteractor,
         private readonly deleteTaskByIdInteractor: DeleteTaskInteractor,
-        private readonly deleteColumnByIdInteractor: DeleteTaskInteractor,
+        private readonly deleteColumnByIdInteractor: DeleteColumnInteractor,
         private readonly findAllColumnsWithTasksInteractor: FindAllColumnsWithTasksInteractor,
         private readonly moveTaskOrdemInteractor: MoveTaskOrdemInteractor,
         private readonly moveColumnOrdemInteractor: MoveColumnOrdemInteractor
@@ -73,6 +74,7 @@ export class BoardController {
 
     async deleteColumnById(request: AuthenticatedRequest, reply: FastifyReply) {
         const { id } = request.params as { id?: unknown };
+        console.log("deleting column id", id);
         if (typeof id !== "string" || id.length === 0) {
             return reply.status(400).send({ message: "ID inválido" });
         }
@@ -139,7 +141,7 @@ export const makeBoardController = () => {
     const createColumnInteractor = new CreateColumnInteractor(boardGateway);
     const createTaskInteractor = new CreateTaskInteractor(boardGateway);
     const deleteTaskByIdInteractor = new DeleteTaskInteractor(boardGateway);
-    const deleteColumnByIdInteractor = new DeleteTaskInteractor(boardGateway);
+    const deleteColumnByIdInteractor = new DeleteColumnInteractor(boardGateway);
     const findAllColumnsWithTasksInteractor =
         new FindAllColumnsWithTasksInteractor(boardGateway);
 
