@@ -77,11 +77,14 @@ export class DisciplineMongoRepository implements DisciplineGateway {
             const disciplinesIds = await this.mongo
                 .collection("user")
                 .findOne({ id: userId })
-                .then((user) =>
-                    user
-                        ? user.disciplinas.map((d: { id: string }) => d.id)
-                        : []
-                );
+                .then((user) => {
+                    if (user && Array.isArray(user.disciplinas)) {
+                        return user.disciplinas.map(
+                            (d: { id: string }) => d.id
+                        );
+                    }
+                    return [];
+                });
 
             if (disciplinesIds.length === 0) return [];
             const docs = await this.disciplineColl

@@ -40,8 +40,8 @@ export class DisciplineController {
         };
 
         await this.enrollStudentInDisciplineInteractor.execute(
-            disciplineId,
-            studentId
+            studentId,
+            disciplineId
         );
 
         res.status(204).send();
@@ -57,8 +57,8 @@ export class DisciplineController {
         };
 
         await this.attributeTeacherInDisciplineInteractor.execute(
-            disciplineId,
-            teacherId
+            teacherId,
+            disciplineId
         );
 
         res.status(204).send();
