@@ -41,6 +41,7 @@ export class EnrollStudentInDisciplineInteractor {
         await this.boardGateway.createColumn({
             titulo: discipline.name,
             userId: user.id,
+            disciplineColumn: true,
         });
 
         const persistedUser = await this.userGateway.update(updatedUser);

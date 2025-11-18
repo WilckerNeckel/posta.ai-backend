@@ -3,6 +3,7 @@ import z from "zod";
 export const columnValidator = z.object({
     id: z.string(),
     ordem: z.number(),
+    disciplineColumn: z.boolean(),
     titulo: z
         .string()
         .min(1, "O nome da coluna tem que possuir pelo menos 3 letras"),
