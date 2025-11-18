@@ -10,4 +10,5 @@ export interface UserGateway {
         role: UserRole;
     }): Promise<User[]>;
     delete(id: string): Promise<void>;
+    update(user: User): Promise<User>;
 }

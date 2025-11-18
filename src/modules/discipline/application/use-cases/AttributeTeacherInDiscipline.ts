@@ -36,9 +36,9 @@ export class AttributeTeacherInDisciplineInteractor {
             disciplinas: updatedDisciplines,
         });
 
-        const savedUser = await this.userGateway.save(updatedUser);
+        const updated = await this.userGateway.update(updatedUser);
 
-        return UserMapper.toBaseUserResponseModel(savedUser);
+        return UserMapper.toBaseUserResponseModel(updated);
     }
 
     private async ensureItemsExists(disciplineId: string, userId: string) {

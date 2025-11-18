@@ -36,9 +36,9 @@ export class EnrollStudentInDisciplineInteractor {
             disciplinas: updatedDisciplines,
         });
 
-        const savedUser = await this.userGateway.save(updatedUser);
+        const persistedUser = await this.userGateway.update(updatedUser);
 
-        return UserMapper.toBaseUserResponseModel(savedUser);
+        return UserMapper.toBaseUserResponseModel(persistedUser);
     }
 
     private async ensureItemsExists(disciplineId: string, userId: string) {
