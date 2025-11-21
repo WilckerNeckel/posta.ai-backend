@@ -10,6 +10,10 @@ export const columnValidator = z.object({
     userId: z.string(),
 });
 
+export const updateColumnValidator = columnValidator.pick({
+    titulo: true,
+});
+
 export const createColumnValidator = columnValidator.omit({
     ordem: true,
     id: true,
@@ -21,6 +25,11 @@ export const taskValidator = z.object({
     ordem: z.number(),
     descricao: z.string(),
     columnId: z.string(),
+});
+
+export const updateTaskValidator = taskValidator.pick({
+    titulo: true,
+    descricao: true,
 });
 
 export const createTaskValidator = taskValidator.omit({

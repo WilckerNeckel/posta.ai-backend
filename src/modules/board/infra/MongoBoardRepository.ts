@@ -7,6 +7,7 @@ import {
     CreateTask,
     Task,
     ColumnWithTasks,
+    UpdateColumn,
 } from "../domain/types";
 import { Db } from "mongodb";
 import { DatabaseError } from "../../shared/errors/DatabaseError";
@@ -129,6 +130,30 @@ export class MongoBoardRepository implements BoardGateway {
         }
     }
 
+    public async updateColumn(
+        columnId: string,
+        column: UpdateColumn
+    ): Promise<Column> {
+        try {
+            await this.columnColl.updateOne({ id: columnId }, { $set: column });
+
+            const updatedColumn = await this.columnColl.findOne({
+                id: columnId,
+            });
+            if (!updatedColumn) {
+                throw new DatabaseError(
+                    "Coluna não encontrada após atualização",
+                    null
+                );
+            }
+
+            return columnValidator.parse(updatedColumn);
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError("Erro ao atualizar coluna", error);
+        }
+    }
+
     public async deleteColumn(columnId: string): Promise<void> {
         try {
             await this.columnColl.deleteOne({ id: columnId });
@@ -173,6 +198,25 @@ export class MongoBoardRepository implements BoardGateway {
             if (error instanceof ZodError) throw error;
 
             throw new DatabaseError("Erro ao criar task", error);
+        }
+    }
+
+    public async updateTask(id: string, task: Task): Promise<Task> {
+        try {
+            await this.taskColl.updateOne({ id }, { $set: task });
+
+            const updatedTask = await this.taskColl.findOne({ id });
+            if (!updatedTask) {
+                throw new DatabaseError(
+                    "Task não encontrada após atualização",
+                    null
+                );
+            }
+
+            return taskValidator.parse(updatedTask);
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError("Erro ao atualizar task", error);
         }
     }
 

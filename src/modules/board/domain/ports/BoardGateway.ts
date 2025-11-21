@@ -4,6 +4,7 @@ import {
     CreateColumn,
     CreateTask,
     Task,
+    UpdateColumn,
 } from "../types";
 
 export interface BoardGateway {
@@ -24,8 +25,10 @@ export interface BoardGateway {
         newPosition: number
     ): Promise<void>;
     createColumn(column: CreateColumn): Promise<Column>;
+    updateColumn(id: string, column: UpdateColumn): Promise<Column>;
     deleteColumn(columnId: string): Promise<void>;
     createTask(task: CreateTask): Promise<Task>;
+    updateTask(id: string, task: Task): Promise<Task>;
     deleteTask(taskId: string): Promise<void>;
     findAllColumnsWithTasks(userId: string): Promise<ColumnWithTasks[]>;
 }
