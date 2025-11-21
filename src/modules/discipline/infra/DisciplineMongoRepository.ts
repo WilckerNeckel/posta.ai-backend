@@ -44,6 +44,26 @@ export class DisciplineMongoRepository implements DisciplineGateway {
         }
     }
 
+    async getColumnByDisciplineName(
+        disciplineName: string,
+        studentId: string
+    ): Promise<Discipline | null> {
+        try {
+            const doc = await this.disciplineColl.findOne({
+                name: disciplineName,
+                studentId: studentId,
+            });
+            // return null if not found
+            if (!doc) return null;
+
+            return disciplineValidator.parse(doc);
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+
+            throw new DatabaseError("Erro ao criar usuário", error);
+        }
+    }
+
     async findAll(filters?: { course?: Course }): Promise<Discipline[]> {
         try {
             const query: any = {};
