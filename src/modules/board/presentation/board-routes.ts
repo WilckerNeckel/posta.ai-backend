@@ -21,9 +21,18 @@ export async function boardRoutes(fastify: FastifyInstance) {
             await makeBoardController().deleteColumnById(req, res);
         });
 
+        protectedRoutes.patch("/column/:id", async (req, res) => {
+            await makeBoardController().updateColumn(req, res);
+        });
+
         protectedRoutes.post("/task", async (req, res) => {
             await makeBoardController().createTask(req, res);
         });
+
+        protectedRoutes.patch("/task/:id", async (req, res) => {
+            await makeBoardController().updateTask(req, res);
+        });
+
         protectedRoutes.delete("/task/:id", async (req, res) => {
             await makeBoardController().deleteTaskById(req, res);
         });

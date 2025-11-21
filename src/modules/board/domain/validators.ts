@@ -12,7 +12,7 @@ export const columnValidator = z.object({
 
 export const updateColumnValidator = columnValidator.pick({
     titulo: true,
-});
+}).partial();
 
 export const createColumnValidator = columnValidator.omit({
     ordem: true,
@@ -30,7 +30,7 @@ export const taskValidator = z.object({
 export const updateTaskValidator = taskValidator.pick({
     titulo: true,
     descricao: true,
-});
+}).partial();
 
 export const createTaskValidator = taskValidator.omit({
     ordem: true,

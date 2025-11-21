@@ -6,6 +6,8 @@ import { FindAllColumnsWithTasksInteractor } from "../../application/use-cases/F
 import {
     createColumnValidator,
     createTaskValidator,
+    updateColumnValidator,
+    updateTaskValidator,
 } from "../../domain/validators";
 import { AuthenticatedRequest } from "../../../../shared/types/AuthenticatedRequest";
 import { MongoBoardRepository } from "../../infra/MongoBoardRepository";
@@ -13,6 +15,8 @@ import { MoveTaskOrdemInteractor } from "../../application/use-cases/MoveTaskOrd
 import { MoveColumnOrdemInteractor } from "../../application/use-cases/MoveColumnOrdemInteractor";
 import z from "zod";
 import { DeleteColumnInteractor } from "../../application/use-cases/DeleteColumnInteractor";
+import { UpdateTaskInteractor } from "../../application/use-cases/UpdateTaskInteractor";
+import { UpdateColumnInteractor } from "../../application/use-cases/UpdateColumnInteractor";
 
 export class BoardController {
     constructor(
@@ -22,7 +26,9 @@ export class BoardController {
         private readonly deleteColumnByIdInteractor: DeleteColumnInteractor,
         private readonly findAllColumnsWithTasksInteractor: FindAllColumnsWithTasksInteractor,
         private readonly moveTaskOrdemInteractor: MoveTaskOrdemInteractor,
-        private readonly moveColumnOrdemInteractor: MoveColumnOrdemInteractor
+        private readonly moveColumnOrdemInteractor: MoveColumnOrdemInteractor,
+        private readonly updateTaskInteractor: UpdateTaskInteractor,
+        private readonly updateColumnInteractor: UpdateColumnInteractor
     ) {}
 
     async createColumn(request: AuthenticatedRequest, reply: FastifyReply) {
@@ -59,6 +65,38 @@ export class BoardController {
         const task = await this.createTaskInteractor.execute(validatedBody);
 
         reply.status(201).send(task);
+    }
+
+    async updateTask(request: AuthenticatedRequest, reply: FastifyReply) {
+        const { id } = request.params as { id?: unknown };
+        if (typeof id !== "string" || id.length === 0) {
+            return reply.status(400).send({ message: "ID inválido" });
+        }
+
+        const updateData = updateTaskValidator.parse(request.body);
+
+        const updatedTask = await this.updateTaskInteractor.execute(
+            id,
+            updateData
+        );
+
+        reply.send(updatedTask);
+    }
+
+    async updateColumn(request: AuthenticatedRequest, reply: FastifyReply) {
+        const { id } = request.params as { id?: unknown };
+        if (typeof id !== "string" || id.length === 0) {
+            return reply.status(400).send({ message: "ID inválido" });
+        }
+
+        const updateData = updateColumnValidator.parse(request.body);
+
+        const updatedColumn = await this.updateColumnInteractor.execute(
+            id,
+            updateData
+        );
+
+        reply.send(updatedColumn);
     }
 
     async deleteTaskById(request: AuthenticatedRequest, reply: FastifyReply) {
@@ -149,6 +187,8 @@ export const makeBoardController = () => {
     const moveColumnOrdemInteractor = new MoveColumnOrdemInteractor(
         boardGateway
     );
+    const updateTaskInteractor = new UpdateTaskInteractor(boardGateway);
+    const updateColumnInteractor = new UpdateColumnInteractor(boardGateway);
 
     return new BoardController(
         createColumnInteractor,
@@ -157,6 +197,8 @@ export const makeBoardController = () => {
         deleteColumnByIdInteractor,
         findAllColumnsWithTasksInteractor,
         moveTaskOrdemInteractor,
-        moveColumnOrdemInteractor
+        moveColumnOrdemInteractor,
+        updateTaskInteractor,
+        updateColumnInteractor
     );
 };

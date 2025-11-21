@@ -10,6 +10,12 @@ export class UpdateColumnInteractor {
             throw new Error("Column not found");
         }
 
+        if (existingColumn.disciplineColumn) {
+            throw new Error(
+                "Não é permitido atualizar colunas de disciplinas."
+            );
+        }
+
         const finalChanges = {
             ...existingColumn,
             ...updateData,
