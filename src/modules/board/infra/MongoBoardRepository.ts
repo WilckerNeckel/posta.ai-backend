@@ -126,7 +126,7 @@ export class MongoBoardRepository implements BoardGateway {
     public async createColumn(column: CreateColumn): Promise<Column> {
         try {
             const last = await this.columnColl
-                .find()
+                .find({ userId: column.userId })
                 .sort({ ordem: -1 })
                 .limit(1)
                 .next();
@@ -196,7 +196,7 @@ export class MongoBoardRepository implements BoardGateway {
     public async createTask(task: CreateTask): Promise<Task> {
         try {
             const last = await this.taskColl
-                .find()
+                .find({ columnId: task.columnId })
                 .sort({ ordem: -1 })
                 .limit(1)
                 .next();
