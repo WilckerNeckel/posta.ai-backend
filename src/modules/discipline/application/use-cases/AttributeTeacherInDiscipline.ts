@@ -1,3 +1,4 @@
+import { BoardGateway } from "../../../board/domain/ports/BoardGateway";
 import { UserGateway } from "../../../user";
 import { UserMapper } from "../../../user/application/mappers/UserMapper";
 import { DisciplineGateway } from "../../domain/DisciplineGateway";
@@ -5,7 +6,8 @@ import { DisciplineGateway } from "../../domain/DisciplineGateway";
 export class AttributeTeacherInDisciplineInteractor {
     constructor(
         private disciplineGateway: DisciplineGateway,
-        private userGateway: UserGateway
+        private userGateway: UserGateway,
+        private boardGateway: BoardGateway
     ) {}
 
     async execute(userId: string, disciplineId: string) {
@@ -37,6 +39,12 @@ export class AttributeTeacherInDisciplineInteractor {
         });
 
         const updated = await this.userGateway.update(updatedUser);
+
+        await this.boardGateway.createColumn({
+            disciplineColumn: true,
+            titulo: discipline.name,
+            userId: updated.id,
+        });
 
         return UserMapper.toBaseUserResponseModel(updated);
     }
