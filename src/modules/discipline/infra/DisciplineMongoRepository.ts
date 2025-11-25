@@ -7,10 +7,13 @@ import { CreateDiscipline, Discipline } from "../domain/types";
 import { Db } from "mongodb";
 import cuid from "cuid";
 import { disciplineValidator } from "../domain/validators";
+import { UserGateway } from "../../user";
+import { UserRole } from "../../user/domain/enums/UserRole";
 
 export class DisciplineMongoRepository implements DisciplineGateway {
     readonly mongo: Db = getMongo();
     private readonly disciplineColl = this.mongo.collection("discipline");
+    private readonly userColl = this.mongo.collection("user");
 
     async createDiscipline(
         disciplineInput: CreateDiscipline
@@ -35,8 +38,16 @@ export class DisciplineMongoRepository implements DisciplineGateway {
             const doc = await this.disciplineColl.findOne({
                 id: id,
             });
+            const professorId = await this.userColl.findOne(
+                { "disciplinas.id": id, role: UserRole.professor },
+                { projection: { id: 1 } }
+            ).then((user) => (user ? user.id : null));
+
             if (!doc) return null;
-            return disciplineValidator.parse(doc);
+            return disciplineValidator.parse({
+                ...doc,
+                professorId: professorId,
+            });
         } catch (error) {
             if (error instanceof ZodError) throw error;
 

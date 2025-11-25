@@ -167,6 +167,8 @@ export class BoardController {
             teacherId: request.user?.userId!,
         };
 
+        console.log("finalBody", finalBody);
+
         const validatedBody = teacherPostNewTaskValidator.parse(finalBody);
 
         const createdTask = await this.teacherPostNewTaskInteractor.execute(

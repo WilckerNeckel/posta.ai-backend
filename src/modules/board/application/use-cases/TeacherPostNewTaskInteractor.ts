@@ -101,6 +101,8 @@ export class TeacherPostNewTaskInteractor {
             throw new Error("Disciplina não encontrada");
         }
 
+        console.log("discipline.professorId", discipline.professorId);
+
         if (discipline.professorId !== teacher.id) {
             throw new Error("Professor não está atribuído a esta disciplina");
         }

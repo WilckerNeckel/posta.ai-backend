@@ -83,11 +83,11 @@ export const makeDisciplineController = () => {
             userGateway,
             boardGateway
         );
-
     const attributeTeacherInDisciplineInteractor =
         new AttributeTeacherInDisciplineInteractor(
             disciplineGateway,
-            userGateway
+            userGateway,
+            boardGateway
         );
 
     return new DisciplineController(
