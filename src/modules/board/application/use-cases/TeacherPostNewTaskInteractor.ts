@@ -1,21 +1,24 @@
+import { WebSocketEventEmitter } from "../../../../shared/domain/ports/websocket-event-emitter";
 import { DisciplineGateway } from "../../../discipline/domain/DisciplineGateway";
 import { UserGateway } from "../../../user";
 import { UserRole } from "../../../user/domain/enums/UserRole";
 import { BoardGateway } from "../../domain/ports/BoardGateway";
 import { CreateTask } from "../../domain/types";
+import { TaskResponseModel } from "../dtos/TaskResponseModel";
 
 export class TeacherPostNewTaskInteractor {
     constructor(
         private userGateway: UserGateway,
         private boardGateway: BoardGateway,
-        private disciplineGateway: DisciplineGateway
+        private disciplineGateway: DisciplineGateway,
+        private wsEmitter: WebSocketEventEmitter
     ) {}
 
     public async execute(
         task: CreateTask,
         teacherId: string,
         disciplineId: string
-    ): Promise<CreateTask> {
+    ): Promise<TaskResponseModel> {
         const { teacher, discipline } =
             await this.ensureTeacherAssignedToDiscipline(
                 teacherId,
@@ -28,7 +31,7 @@ export class TeacherPostNewTaskInteractor {
         });
 
         // teacher task creation
-        await this.createTeacherTask(task);
+        const createdTask = await this.createTeacherTask(task);
 
         // return createdTask;
         // student task creation
@@ -38,10 +41,18 @@ export class TeacherPostNewTaskInteractor {
             )
         );
 
-        return task;
+        this.wsEmitter.emitToEnrolledUsers(
+            "DISCIPLINE_TASK_CREATED",
+            discipline.id,
+            createdTask
+        );
+
+        return createdTask;
     }
 
-    private async createTeacherTask(task: CreateTask): Promise<CreateTask> {
+    private async createTeacherTask(
+        task: CreateTask
+    ): Promise<TaskResponseModel> {
         // (The column id already represents the teacher's task column)
         const createdTask = await this.boardGateway.createTask(task);
         return createdTask;

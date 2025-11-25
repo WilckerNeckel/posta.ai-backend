@@ -21,6 +21,7 @@ import { UpdateColumnInteractor } from "../../application/use-cases/UpdateColumn
 import { TeacherPostNewTaskInteractor } from "../../application/use-cases/TeacherPostNewTaskInteractor";
 import { MongoUserRepository } from "../../../user/infra/MongoUserRepository";
 import { DisciplineMongoRepository } from "../../../discipline/infra/DisciplineMongoRepository";
+import { SocketIOEventEmitter } from "../../../../infra/websockets/socket-io-event-emitter";
 
 export class BoardController {
     constructor(
@@ -226,10 +227,12 @@ export const makeBoardController = () => {
     const updateColumnInteractor = new UpdateColumnInteractor(boardGateway);
     const disciplineGateway = new DisciplineMongoRepository();
     const userGateway = new MongoUserRepository(disciplineGateway);
+    const wsEmitter = new SocketIOEventEmitter();
     const teacherPostNewTaskInteractor = new TeacherPostNewTaskInteractor(
         userGateway,
         boardGateway,
-        disciplineGateway
+        disciplineGateway,
+        wsEmitter
     );
 
     return new BoardController(
