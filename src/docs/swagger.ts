@@ -28,6 +28,10 @@ export const swaggerOptions: FastifyDynamicSwaggerOptions = {
                 name: "Auth",
                 description: "Autenticação e emissão de tokens",
             },
+            {
+                name: "Users",
+                description: "Gestão de usuários e perfis",
+            },
         ],
     },
     hideUntagged: true,

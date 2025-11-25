@@ -5,13 +5,11 @@ export const loginBodySchema = {
         usuario: {
             type: "string",
             description: "Nome de usuário utilizado para login",
-            // example: "usuario.demo",
         },
         senha: {
             type: "string",
             description: "Senha do usuário",
             format: "password",
-            // example: "senhaSegura123",
         },
     },
 };
@@ -23,7 +21,6 @@ export const loginSuccessResponseSchema = {
         accessToken: {
             type: "string",
             description: "Token JWT para autenticar as próximas requisições",
-            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
         },
     },
 };
@@ -32,8 +29,8 @@ const baseErrorSchema = {
     type: "object",
     required: ["status", "message"],
     properties: {
-        status: { type: "string", example: "error" },
-        message: { type: "string", example: "Usuário ou senha incorretos" },
+        status: { type: "string" },
+        message: { type: "string" },
     },
 };
 
@@ -42,17 +39,16 @@ export const validationErrorResponseSchema = {
     required: ["status", "message", "type", "errors"],
     properties: {
         ...baseErrorSchema.properties,
-        type: { type: "string", example: "VALIDATION_ERROR" },
+        type: { type: "string" },
         errors: {
             type: "array",
             items: {
                 type: "object",
                 required: ["field", "message"],
                 properties: {
-                    field: { type: "string", example: "usuario" },
+                    field: { type: "string" },
                     message: {
                         type: "string",
-                        example: "O campo 'usuario' é obrigatório",
                     },
                 },
             },
@@ -64,7 +60,7 @@ export const unauthorizedErrorResponseSchema = {
     ...baseErrorSchema,
     properties: {
         ...baseErrorSchema.properties,
-        type: { type: "string", example: "UNAUTHORIZED" },
+        type: { type: "string" },
     },
 };
 
