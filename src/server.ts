@@ -1,18 +1,23 @@
 // ESM
 import dotenv from "dotenv";
 import Fastify from "fastify";
+import swagger from "@fastify/swagger";
+import swaggerUi from "@fastify/swagger-ui";
 import { errorHandler } from "./modules/shared/middlewares/error-middeware";
 import { connectToMongo } from "./database/mongo";
 import { userRoutes } from "./modules/user/presentation/user-routes";
 import { boardRoutes } from "./modules/board/presentation/board-routes";
 import { authRoutes } from "./modules/authentication/presentation/auth-routes";
 import { disciplineRoutes } from "./modules/discipline/presentation/discipline-routes";
+import { swaggerOptions, swaggerUiOptions } from "./docs/swagger";
 
 const fastify = Fastify({
     logger: true,
 });
 
 fastify.setErrorHandler(errorHandler);
+fastify.register(swagger, swaggerOptions);
+fastify.register(swaggerUi, swaggerUiOptions);
 fastify.register(userRoutes, { prefix: "/api/users" });
 fastify.register(boardRoutes, { prefix: "/api/board" });
 fastify.register(authRoutes, { prefix: "/api/auth" });
