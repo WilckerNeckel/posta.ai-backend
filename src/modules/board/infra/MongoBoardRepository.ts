@@ -36,6 +36,24 @@ export class MongoBoardRepository implements BoardGateway {
         }
     }
 
+    public async getColumnByTittle(
+        tittle: string,
+        userId: string
+    ): Promise<Column | null> {
+        try {
+            const column = await this.columnColl.findOne({
+                titulo: tittle,
+                userId: userId,
+            });
+            if (!column) return null;
+
+            return columnValidator.parse(column);
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError("Erro ao buscar coluna", error);
+        }
+    }
+
     public async getLastColumnOrdemByUserId(userId: string): Promise<number> {
         try {
             return await this.columnColl

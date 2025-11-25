@@ -62,11 +62,10 @@ export class TeacherPostNewTaskInteractor {
         }
 
         // get the student's discipline column
-        const disciplineColumn =
-            await this.disciplineGateway.getColumnByDisciplineName(
-                disciplineName,
-                studentId
-            );
+        const disciplineColumn = await this.boardGateway.getColumnByTittle(
+            disciplineName,
+            studentId
+        );
 
         if (!disciplineColumn) {
             throw new Error(
