@@ -32,6 +32,10 @@ export const swaggerOptions: FastifyDynamicSwaggerOptions = {
                 name: "Users",
                 description: "Gestão de usuários e perfis",
             },
+            {
+                name: "Board",
+                description: "Quadro, colunas e tarefas",
+            },
         ],
     },
     hideUntagged: true,
