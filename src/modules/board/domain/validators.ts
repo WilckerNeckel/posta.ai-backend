@@ -40,3 +40,9 @@ export const createTaskValidator = taskValidator.omit({
 export const columnWithTasksValidator = columnValidator.extend({
     tasks: taskValidator.array(),
 });
+
+export const teacherPostNewTaskValidator = z.object({
+    task: createTaskValidator,
+    teacherId: z.string(),
+    disciplineId: z.string(),
+});

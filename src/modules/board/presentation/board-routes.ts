@@ -2,6 +2,8 @@ import { FastifyInstance } from "fastify";
 import authMiddeware from "../../shared/middlewares/auth-middeware";
 import { makeBoardController } from "./controllers/BoardController";
 
+// 20/11/2025 ----> Preciso testar as novas rotas de atualizar coluna e tarefa e teacher post task. Depois criar a notificação via websocket
+
 export async function boardRoutes(fastify: FastifyInstance) {
     fastify.register(async (protectedRoutes) => {
         protectedRoutes.register(authMiddeware);
@@ -27,6 +29,10 @@ export async function boardRoutes(fastify: FastifyInstance) {
 
         protectedRoutes.post("/task", async (req, res) => {
             await makeBoardController().createTask(req, res);
+        });
+
+        protectedRoutes.post("/task/teacher-post", async (req, res) => {
+            await makeBoardController().teacherPostNewTask(req, res);
         });
 
         protectedRoutes.patch("/task/:id", async (req, res) => {

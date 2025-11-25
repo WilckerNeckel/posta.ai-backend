@@ -6,6 +6,7 @@ import { FindAllColumnsWithTasksInteractor } from "../../application/use-cases/F
 import {
     createColumnValidator,
     createTaskValidator,
+    teacherPostNewTaskValidator,
     updateColumnValidator,
     updateTaskValidator,
 } from "../../domain/validators";
@@ -17,6 +18,9 @@ import z from "zod";
 import { DeleteColumnInteractor } from "../../application/use-cases/DeleteColumnInteractor";
 import { UpdateTaskInteractor } from "../../application/use-cases/UpdateTaskInteractor";
 import { UpdateColumnInteractor } from "../../application/use-cases/UpdateColumnInteractor";
+import { TeacherPostNewTaskInteractor } from "../../application/use-cases/TeacherPostNewTaskInteractor";
+import { MongoUserRepository } from "../../../user/infra/MongoUserRepository";
+import { DisciplineMongoRepository } from "../../../discipline/infra/DisciplineMongoRepository";
 
 export class BoardController {
     constructor(
@@ -28,7 +32,8 @@ export class BoardController {
         private readonly moveTaskOrdemInteractor: MoveTaskOrdemInteractor,
         private readonly moveColumnOrdemInteractor: MoveColumnOrdemInteractor,
         private readonly updateTaskInteractor: UpdateTaskInteractor,
-        private readonly updateColumnInteractor: UpdateColumnInteractor
+        private readonly updateColumnInteractor: UpdateColumnInteractor,
+        private readonly teacherPostNewTaskInteractor: TeacherPostNewTaskInteractor
     ) {}
 
     async createColumn(request: AuthenticatedRequest, reply: FastifyReply) {
@@ -145,6 +150,34 @@ export class BoardController {
         reply.status(204).send();
     }
 
+    async teacherPostNewTask(
+        request: AuthenticatedRequest,
+        reply: FastifyReply
+    ) {
+        const payload = request.body as {
+            task: {
+                titulo: string;
+                descricao: string;
+                columnId: string;
+            };
+            disciplineId: string;
+        };
+        const finalBody = {
+            ...payload,
+            teacherId: request.user?.userId!,
+        };
+
+        const validatedBody = teacherPostNewTaskValidator.parse(finalBody);
+
+        const createdTask = await this.teacherPostNewTaskInteractor.execute(
+            validatedBody.task,
+            validatedBody.teacherId,
+            validatedBody.disciplineId
+        );
+
+        reply.status(201).send(createdTask);
+    }
+
     async moveColumnOrdem(request: AuthenticatedRequest, reply: FastifyReply) {
         const { novaPosicao } = request.body as {
             novaPosicao?: unknown;
@@ -189,6 +222,13 @@ export const makeBoardController = () => {
     );
     const updateTaskInteractor = new UpdateTaskInteractor(boardGateway);
     const updateColumnInteractor = new UpdateColumnInteractor(boardGateway);
+    const disciplineGateway = new DisciplineMongoRepository();
+    const userGateway = new MongoUserRepository(disciplineGateway);
+    const teacherPostNewTaskInteractor = new TeacherPostNewTaskInteractor(
+        userGateway,
+        boardGateway,
+        disciplineGateway
+    );
 
     return new BoardController(
         createColumnInteractor,
@@ -199,6 +239,7 @@ export const makeBoardController = () => {
         moveTaskOrdemInteractor,
         moveColumnOrdemInteractor,
         updateTaskInteractor,
-        updateColumnInteractor
+        updateColumnInteractor,
+        teacherPostNewTaskInteractor
     );
 };
