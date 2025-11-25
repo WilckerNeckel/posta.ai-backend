@@ -36,6 +36,10 @@ export const swaggerOptions: FastifyDynamicSwaggerOptions = {
                 name: "Board",
                 description: "Quadro, colunas e tarefas",
             },
+            {
+                name: "Disciplines",
+                description: "Disciplinas, matrícula e atribuição de professores",
+            },
         ],
     },
     hideUntagged: true,
