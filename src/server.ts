@@ -10,12 +10,18 @@ import { boardRoutes } from "./modules/board/presentation/board-routes";
 import { authRoutes } from "./modules/authentication/presentation/auth-routes";
 import { disciplineRoutes } from "./modules/discipline/presentation/discipline-routes";
 import { swaggerOptions, swaggerUiOptions } from "./docs/swagger";
+import cors from "@fastify/cors";
 
 const fastify = Fastify({
     logger: true,
 });
 
 fastify.setErrorHandler(errorHandler);
+fastify.register(cors, {
+    origin: "*", // ou uma lista: ["http://localhost:5173"]
+    methods: ["GET", "POST", "PUT", "DELETE"],
+});
+
 fastify.register(swagger, swaggerOptions);
 fastify.register(swaggerUi, swaggerUiOptions);
 fastify.register(userRoutes, { prefix: "/api/users" });
