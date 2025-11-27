@@ -19,7 +19,7 @@ const fastify = Fastify({
 fastify.setErrorHandler(errorHandler);
 fastify.register(cors, {
     origin: "*", // ou uma lista: ["http://localhost:5173"]
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 });
 
 fastify.register(swagger, swaggerOptions);
