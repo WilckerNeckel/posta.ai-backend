@@ -14,6 +14,7 @@ import { AuthenticatedRequest } from "../../../../shared/types/AuthenticatedRequ
 import { MongoBoardRepository } from "../../infra/MongoBoardRepository";
 import { MoveTaskOrdemInteractor } from "../../application/use-cases/MoveTaskOrdemInteractor";
 import { MoveColumnOrdemInteractor } from "../../application/use-cases/MoveColumnOrdemInteractor";
+import { MoveTaskToAnotherColumnInteractor } from "../../application/use-cases/MoveTaskToAnotherColumnInteractor";
 import z from "zod";
 import { DeleteColumnInteractor } from "../../application/use-cases/DeleteColumnInteractor";
 import { UpdateTaskInteractor } from "../../application/use-cases/UpdateTaskInteractor";
@@ -31,6 +32,7 @@ export class BoardController {
         private readonly deleteColumnByIdInteractor: DeleteColumnInteractor,
         private readonly findAllColumnsWithTasksInteractor: FindAllColumnsWithTasksInteractor,
         private readonly moveTaskOrdemInteractor: MoveTaskOrdemInteractor,
+        private readonly moveTaskToAnotherColumnInteractor: MoveTaskToAnotherColumnInteractor,
         private readonly moveColumnOrdemInteractor: MoveColumnOrdemInteractor,
         private readonly updateTaskInteractor: UpdateTaskInteractor,
         private readonly updateColumnInteractor: UpdateColumnInteractor,
@@ -151,6 +153,43 @@ export class BoardController {
         reply.status(204).send();
     }
 
+    async moveTaskToAnotherColumn(
+        request: AuthenticatedRequest,
+        reply: FastifyReply
+    ) {
+        const { novaColunaId, novaPosicao } = request.body as {
+            novaColunaId?: unknown;
+            novaPosicao?: unknown;
+        };
+
+        const { id } = request.params as {
+            id?: unknown;
+        };
+
+        const bodyValidator = z.object({
+            novaColunaId: z.string().min(1, "ID da nova coluna inválido"),
+            novaPosicao: z.number().int().min(1, "Nova posição inválida"),
+        });
+
+        const paramsValidator = z.object({
+            id: z.string().min(1, "ID da tarefa inválido"),
+        });
+
+        const validatedBody = bodyValidator.parse({
+            novaColunaId,
+            novaPosicao,
+        });
+        const validatedParams = paramsValidator.parse({ id });
+
+        await this.moveTaskToAnotherColumnInteractor.execute(
+            validatedParams.id,
+            validatedBody.novaColunaId,
+            validatedBody.novaPosicao
+        );
+
+        reply.status(204).send();
+    }
+
     async teacherPostNewTask(
         request: AuthenticatedRequest,
         reply: FastifyReply
@@ -220,6 +259,8 @@ export const makeBoardController = () => {
         new FindAllColumnsWithTasksInteractor(boardGateway);
 
     const moveTaskOrdemInteractor = new MoveTaskOrdemInteractor(boardGateway);
+    const moveTaskToAnotherColumnInteractor =
+        new MoveTaskToAnotherColumnInteractor(boardGateway);
     const moveColumnOrdemInteractor = new MoveColumnOrdemInteractor(
         boardGateway
     );
@@ -242,6 +283,7 @@ export const makeBoardController = () => {
         deleteColumnByIdInteractor,
         findAllColumnsWithTasksInteractor,
         moveTaskOrdemInteractor,
+        moveTaskToAnotherColumnInteractor,
         moveColumnOrdemInteractor,
         updateTaskInteractor,
         updateColumnInteractor,

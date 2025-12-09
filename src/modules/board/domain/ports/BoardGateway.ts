@@ -23,6 +23,13 @@ export interface BoardGateway {
         currentPosition: number,
         newPosition: number
     ): Promise<void>;
+    moveTaskToAnotherColumn(
+        taskId: string,
+        sourceColumnId: string,
+        targetColumnId: string,
+        currentPosition: number,
+        newPosition: number
+    ): Promise<void>;
     moveColumnOrdem(
         columnId: string,
         userId: string,

@@ -104,6 +104,16 @@ export const teacherPostTaskBodySchema = {
     additionalProperties: false,
 } as const;
 
+export const moveTaskToColumnBodySchema = {
+    type: "object",
+    required: ["novaColunaId", "novaPosicao"],
+    properties: {
+        novaColunaId: { type: "string" },
+        novaPosicao: { type: "integer", minimum: 1 },
+    },
+    additionalProperties: false,
+} as const;
+
 export const validationErrorResponseSchema = {
     type: "object",
     required: ["status", "message", "type", "errors"],

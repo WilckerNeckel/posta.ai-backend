@@ -5,7 +5,6 @@ export class MoveTaskOrdemInteractor {
     async execute(taskId: string, newPosition: number): Promise<void> {
         
         const currentTask = await this.boardGateway.getTaskById(taskId);
-        
         if (!currentTask) throw new Error("Tarefa não encontrada");
         
         const lastOrdem = await this.boardGateway.getLastTaskOrdemInColumn(currentTask.columnId);

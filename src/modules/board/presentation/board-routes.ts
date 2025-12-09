@@ -10,6 +10,7 @@ import {
     genericErrorResponseSchema,
     invalidIdErrorResponseSchema,
     movePositionBodySchema,
+    moveTaskToColumnBodySchema,
     taskSchema,
     teacherPostTaskBodySchema,
     unauthorizedErrorResponseSchema,
@@ -279,6 +280,36 @@ export async function boardRoutes(fastify: FastifyInstance) {
             },
             async (req, res) => {
                 await makeBoardController().moveTaskOrdem(req, res);
+            }
+        );
+
+        protectedRoutes.patch(
+            "/task/:id/move-column",
+            {
+                schema: {
+                    tags: [boardTag],
+                    security: [{ bearerAuth: [] }],
+                    summary: "Mover tarefa para outra coluna",
+                    description:
+                        "Move a tarefa para outra coluna e posiciona na ordem desejada.",
+                    params: {
+                        type: "object",
+                        required: ["id"],
+                        properties: {
+                            id: { type: "string", description: "ID da tarefa" },
+                        },
+                    },
+                    body: moveTaskToColumnBodySchema,
+                    response: {
+                        204: { type: "null" },
+                        400: validationErrorResponseSchema,
+                        401: unauthorizedErrorResponseSchema,
+                        500: genericErrorResponseSchema,
+                    },
+                },
+            },
+            async (req, res) => {
+                await makeBoardController().moveTaskToAnotherColumn(req, res);
             }
         );
     });

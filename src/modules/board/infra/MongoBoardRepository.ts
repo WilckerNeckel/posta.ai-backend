@@ -289,6 +289,50 @@ export class MongoBoardRepository implements BoardGateway {
         }
     }
 
+    public async moveTaskToAnotherColumn(
+        taskId: string,
+        sourceColumnId: string,
+        targetColumnId: string,
+        currentPosition: number,
+        newPosition: number
+    ): Promise<void> {
+        try {
+            // Libera a posição na coluna de origem
+            await this.taskColl.updateMany(
+                {
+                    columnId: sourceColumnId,
+                    ordem: { $gt: currentPosition },
+                },
+                { $inc: { ordem: -1 } }
+            );
+
+            // Abre espaço na coluna de destino
+            await this.taskColl.updateMany(
+                {
+                    columnId: targetColumnId,
+                    ordem: { $gte: newPosition },
+                },
+                { $inc: { ordem: 1 } }
+            );
+
+            // Move a task
+            await this.taskColl.updateOne(
+                { id: taskId },
+                { $set: { columnId: targetColumnId, ordem: newPosition } }
+            );
+
+            logger.info(
+                `Task movida de coluna { taskId: ${taskId}, from: ${sourceColumnId}, to: ${targetColumnId}, ordem: ${newPosition} }`
+            );
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError(
+                "Erro ao mover task para outra coluna",
+                error
+            );
+        }
+    }
+
     public async moveColumnOrdem(
         columnId: string,
         userId: string,
