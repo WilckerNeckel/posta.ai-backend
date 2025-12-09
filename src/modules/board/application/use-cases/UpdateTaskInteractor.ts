@@ -10,6 +10,13 @@ export class UpdateTaskInteractor {
             throw new Error("Task not found");
         }
 
+        const column = await this.boardGateway.getColumnById(
+            existingTask.columnId
+        );
+        if (column?.disciplineColumn) {
+            throw new Error("Não é possível alterar tarefa de disciplina");
+        }
+
         const finalChanges = {
             ...existingTask,
             ...updateData,

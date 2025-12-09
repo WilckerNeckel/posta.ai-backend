@@ -21,6 +21,12 @@ export class MoveTaskToAnotherColumnInteractor {
         );
         if (!targetColumn) throw new Error("Coluna de destino não encontrada");
 
+        if (sourceColumn.disciplineColumn || targetColumn.disciplineColumn) {
+            throw new Error(
+                "Não é possível mover tarefas para/de colunas de disciplina"
+            );
+        }
+
         if (sourceColumn.userId !== targetColumn.userId) {
             throw new Error("Colunas pertencem a usuários diferentes");
         }

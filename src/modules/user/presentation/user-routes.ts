@@ -86,5 +86,25 @@ export async function userRoutes(fastify: FastifyInstance) {
                 await makeUserController().findMany(req, res);
             }
         );
+
+        protectedRoutes.get(
+            "/me",
+            {
+                schema: {
+                    tags: [userTag],
+                    summary: "Buscar usuário logado",
+                    security: [{ bearerAuth: [] }],
+                    response: {
+                        200: userResponseSchema,
+                        400: invalidIdErrorResponseSchema,
+                        401: unauthorizedErrorResponseSchema,
+                        500: genericErrorResponseSchema,
+                    },
+                },
+            },
+            async (req, res) => {
+                await makeUserController().findMe(req, res);
+            }
+        );
     });
 }

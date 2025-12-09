@@ -6,6 +6,13 @@ export class MoveTaskOrdemInteractor {
         
         const currentTask = await this.boardGateway.getTaskById(taskId);
         if (!currentTask) throw new Error("Tarefa não encontrada");
+
+        const column = await this.boardGateway.getColumnById(
+            currentTask.columnId
+        );
+        if (column?.disciplineColumn) {
+            throw new Error("Não é possível mover tarefa de disciplina");
+        }
         
         const lastOrdem = await this.boardGateway.getLastTaskOrdemInColumn(currentTask.columnId);
         if (newPosition < 1 || newPosition > lastOrdem)

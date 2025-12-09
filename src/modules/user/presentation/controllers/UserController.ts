@@ -39,6 +39,18 @@ export class UserController {
 
         reply.send(users);
     }
+
+    async findMe(request: AuthenticatedRequest, reply: FastifyReply) {
+        const userId = request.user?.userId;
+
+        if (!userId || typeof userId !== "string") {
+            return reply.status(400).send({ message: "ID inválido" });
+        }
+
+        const user = await this.getUserByIdInteractor.execute(userId);
+
+        reply.send(user);
+    }
 }
 
 export const makeUserController = () => {
