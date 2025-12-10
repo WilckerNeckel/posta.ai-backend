@@ -46,7 +46,11 @@ export class TeacherPostNewTaskInteractor {
         this.wsEmitter.emitToEnrolledUsers(
             "DISCIPLINE_TASK_CREATED",
             discipline.id,
-            createdTask
+            {
+                ...createdTask,
+                disciplineId: discipline.id,
+                disciplineName: discipline.name,
+            }
         );
 
         return createdTask;
