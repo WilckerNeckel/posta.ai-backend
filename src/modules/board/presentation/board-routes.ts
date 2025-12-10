@@ -242,13 +242,13 @@ export async function boardRoutes(fastify: FastifyInstance) {
                             id: { type: "string", description: "ID da tarefa" },
                         },
                     },
-                    body: {
+                    querystring: {
                         type: "object",
                         required: ["disciplineId"],
                         properties: {
                             disciplineId: { type: "string" },
                         },
-                        additionalProperties: false,
+                        additionalProperties: false
                     },
                     response: {
                         204: { type: "null" },

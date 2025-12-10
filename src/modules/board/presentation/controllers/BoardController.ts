@@ -266,7 +266,10 @@ export class BoardController {
     ) {
         const { id } = request.params as { id?: unknown };
         const userId = request.user?.userId;
-        const { disciplineId } = request.body as { disciplineId?: unknown };
+        const { disciplineId: disciplineIdBody } =
+            (request.body as { disciplineId?: unknown } | undefined) ?? {};
+        const { disciplineId: disciplineIdQuery } =
+            (request.query as { disciplineId?: unknown } | undefined) ?? {};
 
         const idValidator = z.string().min(1, "ID inválido");
         const disciplineValidator = z.string().min(
@@ -275,7 +278,9 @@ export class BoardController {
         );
 
         const taskId = idValidator.parse(id);
-        const disciplineIdValidated = disciplineValidator.parse(disciplineId);
+        const disciplineIdValidated = disciplineValidator.parse(
+            disciplineIdBody ?? disciplineIdQuery
+        );
 
         await this.teacherDeleteTaskInteractor.execute(
             taskId,
