@@ -8,13 +8,15 @@ import { DisciplineMongoRepository } from "../../infra/DisciplineMongoRepository
 import { MongoUserRepository } from "../../../user/infra/MongoUserRepository";
 import { AttributeTeacherInDisciplineInteractor } from "../../application/use-cases/AttributeTeacherInDiscipline";
 import { MongoBoardRepository } from "../../../board/infra/MongoBoardRepository";
+import { FindDisciplinesByUserInteractor } from "../../application/use-cases/FindDisciplinesByUserInteractor";
 
 export class DisciplineController {
     constructor(
         private readonly createDisciplineInteractor: CreateDisciplineInteractor,
         private readonly findManyDisciplinesInteractor: FindManyDisciplinesInteractor,
         private readonly enrollStudentInDisciplineInteractor: EnrollStudentInDisciplineInteractor,
-        private readonly attributeTeacherInDisciplineInteractor: AttributeTeacherInDisciplineInteractor
+        private readonly attributeTeacherInDisciplineInteractor: AttributeTeacherInDisciplineInteractor,
+        private readonly findDisciplinesByUserInteractor: FindDisciplinesByUserInteractor
     ) {}
 
     async createDiscipline(req: AuthenticatedRequest, res: FastifyReply) {
@@ -64,6 +66,19 @@ export class DisciplineController {
 
         res.status(204).send();
     }
+
+    async findMyDisciplines(req: AuthenticatedRequest, res: FastifyReply) {
+        const userId = req.user?.userId;
+        if (!userId || typeof userId !== "string") {
+            return res.status(400).send({ message: "ID inválido" });
+        }
+
+        const disciplines = await this.findDisciplinesByUserInteractor.execute(
+            userId
+        );
+
+        res.status(200).send(disciplines);
+    }
 }
 
 export const makeDisciplineController = () => {
@@ -89,11 +104,15 @@ export const makeDisciplineController = () => {
             userGateway,
             boardGateway
         );
+    const findDisciplinesByUserInteractor = new FindDisciplinesByUserInteractor(
+        disciplineGateway
+    );
 
     return new DisciplineController(
         createDisciplineInteractor,
         findManyDisciplinesInteractor,
         enrollStudentInDisciplineInteractor,
-        attributeTeacherInDisciplineInteractor
+        attributeTeacherInDisciplineInteractor,
+        findDisciplinesByUserInteractor
     );
 };

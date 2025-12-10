@@ -38,17 +38,11 @@ export class DisciplineMongoRepository implements DisciplineGateway {
             const doc = await this.disciplineColl.findOne({
                 id: id,
             });
-            const professorId = await this.userColl
-                .findOne(
-                    { "disciplinas.id": id, role: UserRole.professor },
-                    { projection: { id: 1 } }
-                )
-                .then((user) => (user ? user.id : null));
-
             if (!doc) return null;
+            const professorId = await this.findProfessorIdByDiscipline(id);
             return disciplineValidator.parse({
                 ...doc,
-                professorId: professorId,
+                professorId,
             });
         } catch (error) {
             if (error instanceof ZodError) throw error;
@@ -103,11 +97,35 @@ export class DisciplineMongoRepository implements DisciplineGateway {
             const docs = await this.disciplineColl
                 .find({ id: { $in: disciplinesIds } })
                 .toArray();
-            return docs.map((doc) => disciplineValidator.parse(doc));
+            const docsWithProfessor = await Promise.all(
+                docs.map(async (doc) => {
+                    const professorId = await this.findProfessorIdByDiscipline(
+                        doc.id
+                    );
+                    return {
+                        ...doc,
+                        professorId,
+                    };
+                })
+            );
+            return docsWithProfessor.map((doc) =>
+                disciplineValidator.parse(doc)
+            );
         } catch (error) {
             if (error instanceof ZodError) throw error;
 
             throw new DatabaseError("Erro ao criar usuário", error);
         }
+    }
+
+    private async findProfessorIdByDiscipline(
+        disciplineId: string
+    ): Promise<string | null> {
+        return this.userColl
+            .findOne(
+                { "disciplinas.id": disciplineId, role: UserRole.professor },
+                { projection: { id: 1 } }
+            )
+            .then((user) => (user ? user.id : null));
     }
 }

@@ -11,6 +11,7 @@ import { authRoutes } from "./modules/authentication/presentation/auth-routes";
 import { disciplineRoutes } from "./modules/discipline/presentation/discipline-routes";
 import { swaggerOptions, swaggerUiOptions } from "./docs/swagger";
 import cors from "@fastify/cors";
+import { setupSocketIO } from "./infra/websockets/websocket-server";
 
 const fastify = Fastify({
     logger: true,
@@ -34,6 +35,7 @@ const start = async () => {
         dotenv.config(); // initialize
         const port = parseInt(process.env.PORT || "3000");
         await connectToMongo();
+        setupSocketIO(fastify);
         await fastify.listen({ port: port, host: "0.0.0.0" });
         console.log(`Server is running at http://localhost:${port}`);
     } catch (err) {

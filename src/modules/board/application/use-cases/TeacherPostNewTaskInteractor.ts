@@ -30,6 +30,8 @@ export class TeacherPostNewTaskInteractor {
             role: UserRole.aluno,
         });
 
+        console.log("CHEGOU AQUI")
+
         // teacher task creation
         const createdTask = await this.createTeacherTask(task);
 

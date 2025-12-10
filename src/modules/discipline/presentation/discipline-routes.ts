@@ -10,6 +10,7 @@ import {
     genericErrorResponseSchema,
     unauthorizedErrorResponseSchema,
     validationErrorResponseSchema,
+    disciplineSchema,
 } from "./discipline-schemas";
 
 export async function disciplineRoutes(fastify: FastifyInstance) {
@@ -99,6 +100,25 @@ export async function disciplineRoutes(fastify: FastifyInstance) {
                     req,
                     res
                 );
+            }
+        );
+
+        protectedRoutes.get(
+            "/me",
+            {
+                schema: {
+                    tags: [disciplineTag],
+                    security: [{ bearerAuth: [] }],
+                    summary: "Listar disciplinas do usuário autenticado",
+                    response: {
+                        200: { type: "array", items: disciplineSchema },
+                        401: unauthorizedErrorResponseSchema,
+                        500: genericErrorResponseSchema,
+                    },
+                },
+            },
+            async (req, res) => {
+                await makeDisciplineController().findMyDisciplines(req, res);
             }
         );
     });
