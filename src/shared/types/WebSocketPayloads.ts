@@ -5,4 +5,11 @@ export type WebSocketPayloads = {
         disciplineId: string;
         disciplineName: string;
     };
+    DISCIPLINE_TASK_DELETED: {
+        taskId: string;
+        disciplineId: string;
+        disciplineName: string;
+        columnId: string;
+        taskTitle: string;
+    };
 };

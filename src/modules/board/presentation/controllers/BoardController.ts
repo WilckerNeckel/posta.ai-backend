@@ -354,7 +354,8 @@ export const makeBoardController = () => {
     const teacherDeleteTaskInteractor = new TeacherDeleteTaskInteractor(
         userGateway,
         boardGateway,
-        disciplineGateway
+        disciplineGateway,
+        wsEmitter
     );
 
     return new BoardController(

@@ -2,12 +2,14 @@ import { DisciplineGateway } from "../../../discipline/domain/DisciplineGateway"
 import { UserGateway } from "../../../user";
 import { UserRole } from "../../../user/domain/enums/UserRole";
 import { BoardGateway } from "../../domain/ports/BoardGateway";
+import { WebSocketEventEmitter } from "../../../../shared/domain/ports/websocket-event-emitter";
 
 export class TeacherDeleteTaskInteractor {
     constructor(
         private userGateway: UserGateway,
         private boardGateway: BoardGateway,
-        private disciplineGateway: DisciplineGateway
+        private disciplineGateway: DisciplineGateway,
+        private wsEmitter: WebSocketEventEmitter
     ) {}
 
     public async execute(
@@ -65,6 +67,18 @@ export class TeacherDeleteTaskInteractor {
 
                 await this.boardGateway.deleteTask(targetTask.id);
             })
+        );
+
+        this.wsEmitter.emitToEnrolledUsers(
+            "DISCIPLINE_TASK_DELETED",
+            discipline.id,
+            {
+                taskId,
+                disciplineId: discipline.id,
+                disciplineName: discipline.name,
+                columnId: currentTask.columnId,
+                taskTitle: previousTitle,
+            }
         );
     }
 
