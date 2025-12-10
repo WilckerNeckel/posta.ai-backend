@@ -88,6 +88,19 @@ export class MongoBoardRepository implements BoardGateway {
         }
     }
 
+    public async getTasksByColumn(columnId: string): Promise<Task[]> {
+        try {
+            const tasks = await this.taskColl
+                .find({ columnId })
+                .sort({ ordem: 1 })
+                .toArray();
+            return tasks.map((task) => taskValidator.parse(task));
+        } catch (error) {
+            if (error instanceof ZodError) throw error;
+            throw new DatabaseError("Erro ao listar tasks da coluna", error);
+        }
+    }
+
     public async findAllColumnsWithTasks(
         userId: string
     ): Promise<ColumnWithTasks[]> {

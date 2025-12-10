@@ -23,6 +23,8 @@ import { TeacherPostNewTaskInteractor } from "../../application/use-cases/Teache
 import { MongoUserRepository } from "../../../user/infra/MongoUserRepository";
 import { DisciplineMongoRepository } from "../../../discipline/infra/DisciplineMongoRepository";
 import { SocketIOEventEmitter } from "../../../../infra/websockets/socket-io-event-emitter";
+import { TeacherUpdateTaskInteractor } from "../../application/use-cases/TeacherUpdateTaskInteractor";
+import { TeacherDeleteTaskInteractor } from "../../application/use-cases/TeacherDeleteTaskInteractor";
 
 export class BoardController {
     constructor(
@@ -36,7 +38,9 @@ export class BoardController {
         private readonly moveColumnOrdemInteractor: MoveColumnOrdemInteractor,
         private readonly updateTaskInteractor: UpdateTaskInteractor,
         private readonly updateColumnInteractor: UpdateColumnInteractor,
-        private readonly teacherPostNewTaskInteractor: TeacherPostNewTaskInteractor
+        private readonly teacherPostNewTaskInteractor: TeacherPostNewTaskInteractor,
+        private readonly teacherUpdateTaskInteractor: TeacherUpdateTaskInteractor,
+        private readonly teacherDeleteTaskInteractor: TeacherDeleteTaskInteractor
     ) {}
 
     async createColumn(request: AuthenticatedRequest, reply: FastifyReply) {
@@ -220,6 +224,68 @@ export class BoardController {
         reply.status(201).send(createdTask);
     }
 
+    async teacherUpdateTask(
+        request: AuthenticatedRequest,
+        reply: FastifyReply
+    ) {
+        const { id } = request.params as { id?: unknown };
+        const userId = request.user?.userId;
+        const { disciplineId, titulo, descricao } = request.body as {
+            disciplineId?: unknown;
+            titulo?: unknown;
+            descricao?: unknown;
+        };
+
+        const idValidator = z.string().min(1, "ID inválido");
+        const disciplineValidator = z.string().min(
+            1,
+            "ID da disciplina inválido"
+        );
+        const updateTaskValidator = z.object({
+            titulo: z.string().min(3).optional(),
+            descricao: z.string().optional(),
+        });
+
+        const taskId = idValidator.parse(id);
+        const disciplineIdValidated = disciplineValidator.parse(disciplineId);
+        const updateData = updateTaskValidator.parse({ titulo, descricao });
+
+        await this.teacherUpdateTaskInteractor.execute(
+            taskId,
+            userId!,
+            disciplineIdValidated,
+            updateData
+        );
+
+        reply.status(204).send();
+    }
+
+    async teacherDeleteTask(
+        request: AuthenticatedRequest,
+        reply: FastifyReply
+    ) {
+        const { id } = request.params as { id?: unknown };
+        const userId = request.user?.userId;
+        const { disciplineId } = request.body as { disciplineId?: unknown };
+
+        const idValidator = z.string().min(1, "ID inválido");
+        const disciplineValidator = z.string().min(
+            1,
+            "ID da disciplina inválido"
+        );
+
+        const taskId = idValidator.parse(id);
+        const disciplineIdValidated = disciplineValidator.parse(disciplineId);
+
+        await this.teacherDeleteTaskInteractor.execute(
+            taskId,
+            userId!,
+            disciplineIdValidated
+        );
+
+        reply.status(204).send();
+    }
+
     async moveColumnOrdem(request: AuthenticatedRequest, reply: FastifyReply) {
         const { novaPosicao } = request.body as {
             novaPosicao?: unknown;
@@ -275,6 +341,16 @@ export const makeBoardController = () => {
         disciplineGateway,
         wsEmitter
     );
+    const teacherUpdateTaskInteractor = new TeacherUpdateTaskInteractor(
+        userGateway,
+        boardGateway,
+        disciplineGateway
+    );
+    const teacherDeleteTaskInteractor = new TeacherDeleteTaskInteractor(
+        userGateway,
+        boardGateway,
+        disciplineGateway
+    );
 
     return new BoardController(
         createColumnInteractor,
@@ -287,6 +363,8 @@ export const makeBoardController = () => {
         moveColumnOrdemInteractor,
         updateTaskInteractor,
         updateColumnInteractor,
-        teacherPostNewTaskInteractor
+        teacherPostNewTaskInteractor,
+        teacherUpdateTaskInteractor,
+        teacherDeleteTaskInteractor
     );
 };

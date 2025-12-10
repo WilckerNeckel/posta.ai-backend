@@ -104,6 +104,17 @@ export const teacherPostTaskBodySchema = {
     additionalProperties: false,
 } as const;
 
+export const teacherManageTaskBodySchema = {
+    type: "object",
+    required: ["disciplineId"],
+    properties: {
+        disciplineId: { type: "string" },
+        titulo: { type: "string", minLength: 3 },
+        descricao: { type: "string" },
+    },
+    additionalProperties: false,
+} as const;
+
 export const moveTaskToColumnBodySchema = {
     type: "object",
     required: ["novaColunaId", "novaPosicao"],

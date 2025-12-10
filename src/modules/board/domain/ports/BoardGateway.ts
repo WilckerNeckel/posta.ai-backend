@@ -17,6 +17,7 @@ export interface BoardGateway {
 
     getLastTaskOrdemInColumn(columnId: string): Promise<number>;
     getLastColumnOrdemByUserId(userId: string): Promise<number>;
+    getTasksByColumn(columnId: string): Promise<Task[]>;
     moveTaskOrdem(
         taskId: string,
         columnId: string,

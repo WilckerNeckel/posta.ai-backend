@@ -13,6 +13,7 @@ import {
     moveTaskToColumnBodySchema,
     taskSchema,
     teacherPostTaskBodySchema,
+    teacherManageTaskBodySchema,
     unauthorizedErrorResponseSchema,
     updateColumnBodySchema,
     updateTaskBodySchema,
@@ -196,6 +197,69 @@ export async function boardRoutes(fastify: FastifyInstance) {
             },
             async (req, res) => {
                 await makeBoardController().teacherPostNewTask(req, res);
+            }
+        );
+
+        protectedRoutes.patch(
+            "/task/:id/teacher",
+            {
+                schema: {
+                    tags: [boardTag],
+                    security: [{ bearerAuth: [] }],
+                    summary: "Professor atualiza tarefa de disciplina",
+                    params: {
+                        type: "object",
+                        required: ["id"],
+                        properties: {
+                            id: { type: "string", description: "ID da tarefa" },
+                        },
+                    },
+                    body: teacherManageTaskBodySchema,
+                    response: {
+                        204: { type: "null" },
+                        400: validationErrorResponseSchema,
+                        401: unauthorizedErrorResponseSchema,
+                        500: genericErrorResponseSchema,
+                    },
+                },
+            },
+            async (req, res) => {
+                await makeBoardController().teacherUpdateTask(req, res);
+            }
+        );
+
+        protectedRoutes.delete(
+            "/task/:id/teacher",
+            {
+                schema: {
+                    tags: [boardTag],
+                    security: [{ bearerAuth: [] }],
+                    summary: "Professor remove tarefa de disciplina",
+                    params: {
+                        type: "object",
+                        required: ["id"],
+                        properties: {
+                            id: { type: "string", description: "ID da tarefa" },
+                        },
+                    },
+                    body: {
+                        type: "object",
+                        required: ["disciplineId"],
+                        properties: {
+                            disciplineId: { type: "string" },
+                        },
+                        additionalProperties: false,
+                    },
+                    response: {
+                        204: { type: "null" },
+                        400: validationErrorResponseSchema,
+                        401: unauthorizedErrorResponseSchema,
+                        500: genericErrorResponseSchema,
+                    },
+                },
+            },
+            async (req, res) => {
+                await makeBoardController().teacherDeleteTask(req, res);
             }
         );
 
