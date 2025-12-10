@@ -12,4 +12,9 @@ export type WebSocketPayloads = {
         columnId: string;
         taskTitle: string;
     };
+    DISCIPLINE_TASK_UPDATED: TaskResponseModel & {
+        disciplineId: string;
+        disciplineName: string;
+        previousTitle: string;
+    };
 };

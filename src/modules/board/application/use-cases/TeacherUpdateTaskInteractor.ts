@@ -3,12 +3,14 @@ import { UserGateway } from "../../../user";
 import { UserRole } from "../../../user/domain/enums/UserRole";
 import { BoardGateway } from "../../domain/ports/BoardGateway";
 import { UpdateTask } from "../../domain/types";
+import { WebSocketEventEmitter } from "../../../../shared/domain/ports/websocket-event-emitter";
 
 export class TeacherUpdateTaskInteractor {
     constructor(
         private userGateway: UserGateway,
         private boardGateway: BoardGateway,
-        private disciplineGateway: DisciplineGateway
+        private disciplineGateway: DisciplineGateway,
+        private wsEmitter: WebSocketEventEmitter
     ) {}
 
     public async execute(
@@ -74,6 +76,18 @@ export class TeacherUpdateTaskInteractor {
                     ...updateData,
                 });
             })
+        );
+
+        this.wsEmitter.emitToEnrolledUsers(
+            "DISCIPLINE_TASK_UPDATED",
+            discipline.id,
+            {
+                ...currentTask,
+                ...updateData,
+                disciplineId: discipline.id,
+                disciplineName: discipline.name,
+                previousTitle,
+            }
         );
     }
 
